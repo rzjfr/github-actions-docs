@@ -22,7 +22,7 @@ Sample `.pre-commit-config.yaml`
 
 ```yaml
 - repo: https://github.com/rzjfr/github-actions-docs
-  rev: 0.0.2
+  rev: 0.1.0
   hooks:
     - id: generate-gh-actions-docs
 ```
