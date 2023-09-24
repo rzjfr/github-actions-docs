@@ -12,6 +12,38 @@ Command line:
 
 ```bash
 github-actions-docs --help
+
+```
+
+# Quick start
+
+Following command creates or updates `.github/actions/example/README.md`.
+
+```bash
+github-actions-docs .github/actions/example/action.yaml --output-mode inject
+```
+
+Sample `README.md`
+
+```markdown
+# <!-- GH_DOCS_NAME -->
+
+<!-- GH_DOCS_DESCRIPTION -->
+
+> [!NOTE]
+> This action is a <!-- GH_DOCS_RUNS --> action.
+
+## Inputs
+
+<!-- GH_DOCS_INPUTS -->
+
+## Outputs
+
+<!-- GH_DOCS_OUTPUTS -->
+
+## Usage
+
+<!-- GH_DOCS_USAGE -->
 ```
 
 ## As a pre-commit hook
