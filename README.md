@@ -2,7 +2,7 @@
 
 Generate documentations for github actions and reusable workflows.
 
-# Install
+## Install
 
 ```bash
 pip install github-actions-docs
@@ -15,7 +15,7 @@ github-actions-docs --help
 
 ```
 
-# Quick start
+## Quick start
 
 Following command creates or updates `.github/actions/example/README.md`.
 
