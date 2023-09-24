@@ -1,0 +1,35 @@
+[project]
+name = "github_actions_docs"
+description = "Generate github actions docs"
+version = "0.0.1"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    'Development Status :: 0 - Alfa',
+    'Environment :: Console',
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3 :: Only',
+]
+dependencies = [
+  'importlib-metadata>=6.8.0',
+  'tabulate>=0.9.0',
+  'pyyaml>=6.0.0'
+]
+
+[project.urls]
+"Homepage" = "https://github.com/rzjfr/github-actions-docs"
+
+[project.scripts]
+github-actions-docs = "github_actions_docs:main"
+
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["github_actions_docs"]  # package names should match these glob patterns (["*"] by default)
+exclude = []  # exclude packages matching these glob patterns (empty by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
