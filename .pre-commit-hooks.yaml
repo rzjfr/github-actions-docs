@@ -1,0 +1,9 @@
+- id: genterate-gh-actions-docs
+  name: Generate Github actions docs
+  description: generate-gh-actions-docs
+  entry: github-actions-docs
+  language: python
+  types: [yaml]
+  files: ''
+  args: ['--output-mod inject']
+  minimum_pre_commit_version: 0.15.0

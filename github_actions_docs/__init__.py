@@ -11,8 +11,7 @@ from tabulate import tabulate
 __version__ = metadata("github-actions-docs")["Version"]
 
 
-DOCS_TEMPLATE = """
-# <!-- GH_DOCS_NAME -->
+DOCS_TEMPLATE = """# <!-- GH_DOCS_NAME -->
 <!-- GH_DOCS_DESCRIPTION -->
 
 > [!NOTE]
@@ -55,6 +54,9 @@ def parse_yaml(yaml_path: str) -> dict:
     with open(yaml_path, "r") as f:
         yaml_content = yaml.safe_load(f)
 
+    if not type(yaml_content) == dict:
+        raise GithubActionsDocsError("file doesn't seem to be a valid action file.")
+
     result = {}
     gh_actions_required_fields = {"name", "description", "runs"}
     if not gh_actions_required_fields <= set(yaml_content.keys()):
@@ -72,9 +74,9 @@ def parse_yaml(yaml_path: str) -> dict:
         inputs_content.append(
             [
                 item,
-                inputs[item]["description"],
-                f"`{inputs[item].get('required', 'true')}`",
-                f"`{inputs[item].get('default', '-')}`",
+                inputs[item]["description"].replace("\n", ""),
+                f"{inputs[item].get('required', True)}",
+                f"\"{inputs[item].get('default', '')}\"",
             ]
         )
     result["inputs"] = {
@@ -89,7 +91,7 @@ def parse_yaml(yaml_path: str) -> dict:
         output_content.append(
             [
                 item,
-                outputs[item]["description"],
+                outputs[item]["description"].replace("\n", ""),
             ]
         )
     result["outputs"] = {
@@ -98,7 +100,7 @@ def parse_yaml(yaml_path: str) -> dict:
     }
 
     try:
-        result["runs"] = f"`{yaml_content['runs']['using']}`"
+        result["runs"] = f"{yaml_content['runs']['using']}"
     except KeyError:
         raise GithubActionsDocsSchemaError(["using"], ".runs")
 
@@ -123,31 +125,45 @@ def generate_usage(inputs: list, composit_action_path: str = "") -> str:
 
 
 def update_style(parsed_yaml: dict) -> dict:
-    inputs_table = tabulate(
-        parsed_yaml["inputs"]["content"],
-        parsed_yaml["inputs"]["header"],
-        tablefmt="github",
-    )
-    parsed_yaml["inputs"] = f"\n{inputs_table}\n"
+    if parsed_yaml["inputs"]["content"]:
+        inputs_table = tabulate(
+            parsed_yaml["inputs"]["content"],
+            parsed_yaml["inputs"]["header"],
+            tablefmt="github",
+        )
+        parsed_yaml["inputs"] = f"\n\n{inputs_table}\n\n"
+    else:
+        parsed_yaml["inputs"] = "\n\nThis Action does not have any inputs.\n\n"
 
-    outputs_table = tabulate(
-        parsed_yaml["outputs"]["content"],
-        parsed_yaml["outputs"]["header"],
-        tablefmt="github",
-    )
-    parsed_yaml["outputs"] = f"\n{outputs_table}\n"
+    if parsed_yaml["outputs"]["content"]:
+        outputs_table = tabulate(
+            parsed_yaml["outputs"]["content"],
+            parsed_yaml["outputs"]["header"],
+            tablefmt="github",
+        )
+        parsed_yaml["outputs"] = f"\n\n{outputs_table}\n\n"
+    else:
+        parsed_yaml["outputs"] = "\n\nThis Action does not have any outputs.\n\n"
 
-    parsed_yaml["usage"] = f"\n```yaml\n{parsed_yaml['usage']}\n```\n"
+    parsed_yaml["runs"] = f"`{parsed_yaml['runs']}`"
+
+    parsed_yaml["description"] = f"\n\n{parsed_yaml['description'].strip()}\n\n"
+
+    parsed_yaml["usage"] = f"\n\n```yaml\n{parsed_yaml['usage']}```\n\n"
 
     return parsed_yaml
 
 
-def replace_tag(content, tag_name, tag_value, tag_prefix="GH_DOCS"):
+def replace_tag(
+    content: str, tag_name: str, tag_value: str, tag_prefix: str = "GH_DOCS"
+) -> str:
+    """ """
     # Update tags
     content = re.sub(
         rf"(<!-- BEGIN_{tag_prefix}_{tag_name.upper()} -->)(.*)(<!-- END_{tag_prefix}_{tag_name.upper()} -->)",
         rf"\1{tag_value}\3",
         content,
+        flags=re.DOTALL,
     )
     # Generate
     content = re.sub(
@@ -159,21 +175,24 @@ def replace_tag(content, tag_name, tag_value, tag_prefix="GH_DOCS"):
 
 
 def generate_docs(docs_file: str = "README.md") -> int:
+    """ """
     args = _build_parser().parse_args()
-    print(args)
+    failed = False
     for path in args.path:
         # Prepare
         yaml_path = pathlib.Path(path)
-        parsed_yaml = parse_yaml(yaml_path)
+        try:
+            parsed_yaml = parse_yaml(yaml_path)
+        except GithubActionsDocsError:
+            continue
         action_path = (
-            f"/{yaml_path.parent}" if parsed_yaml["runs"] == "composit" else ""
+            f"/{yaml_path.parent}" if parsed_yaml["runs"] == "composite" else ""
         )
         parsed_yaml["usage"] = generate_usage(
             parsed_yaml["inputs"]["content"], action_path
         )
 
         docs_items = update_style(parsed_yaml)
-        print(docs_items)
 
         # Generate
         docs_path = yaml_path.parent.joinpath(docs_file)
@@ -187,17 +206,21 @@ def generate_docs(docs_file: str = "README.md") -> int:
         for item in docs_items.keys():
             content = replace_tag(content, item, docs_items[item])
 
-        print(content)
+        # FIXME: tabular overwrite
+        content = content.replace("-|-", " | ")
+        content = content.replace("|-", "| ")
+        content = content.replace("-|", " |")
 
-    return 1
+        with open(docs_path, "r") as f:
+            old_content = f.read()
 
+        if not old_content == content:
+            failed = True
+            with open(docs_path, "w") as f:
+                print(f"generating: {docs_path}")
+                f.write(content)
 
-def inject_docs() -> None:
-    pass
-
-
-def replace_docs() -> None:
-    pass
+    return 1 if failed else 0
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -230,7 +253,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "path",
-        nargs=1,
+        nargs="+",
         type=str,
         help="Path of a github reusable workflow or composite action file.",
     )
@@ -238,13 +261,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def main():
-    # try:
-    # sys.exit(generate_docs())
-    # except Exception as e:
-    # sys.stderr.write("github-actions-docs: " + str(e) + "\n")
-    # sys.exit(1)
-    generate_docs()
-    sys.exit(1)
+    sys.exit(generate_docs())
 
 
 if __name__ == "__main__":
