@@ -51,7 +51,7 @@ def parse_yaml(yaml_path: str) -> dict:
     """validates and parses action file to extract the relevant information"""
     if not yaml_path.is_file():
         raise GithubActionsDocsError(f"file {yaml_path} does not exist")
-    if not yaml_path.suffix == ".yaml":
+    if not (yaml_path.suffix == ".yaml" or yaml_path.suffix == ".yml"):
         raise GithubActionsDocsError(f"expected .yaml instead of {yaml_path.suffix}.")
     with open(yaml_path, "r") as f:
         yaml_content = yaml.safe_load(f)
