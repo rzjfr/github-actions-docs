@@ -6,7 +6,6 @@ import sys
 import git
 import yaml
 from importlib_metadata import metadata
-from tabulate import tabulate
 
 __version__ = metadata("github-actions-docs")["Version"]
 
@@ -18,12 +17,15 @@ DOCS_TEMPLATE = """# <!-- GH_DOCS_NAME -->
 > This action is a <!-- GH_DOCS_RUNS --> action.
 
 ## Inputs
+
 <!-- GH_DOCS_INPUTS -->
 
 ## Outputs
+
 <!-- GH_DOCS_OUTPUTS -->
 
 ## Usage
+
 <!-- GH_DOCS_USAGE -->
 """
 
@@ -126,22 +128,20 @@ def generate_usage(inputs: list, composit_action_path: str = "") -> str:
 
 def update_style(parsed_yaml: dict) -> dict:
     if parsed_yaml["inputs"]["content"]:
-        inputs_table = tabulate(
-            parsed_yaml["inputs"]["content"],
+        inputs_table = create_table(
             parsed_yaml["inputs"]["header"],
-            tablefmt="github",
+            parsed_yaml["inputs"]["content"],
         )
-        parsed_yaml["inputs"] = f"\n\n{inputs_table}\n\n"
+        parsed_yaml["inputs"] = f"\n\n{inputs_table}\n"
     else:
         parsed_yaml["inputs"] = "\n\nThis Action does not have any inputs.\n\n"
 
     if parsed_yaml["outputs"]["content"]:
-        outputs_table = tabulate(
-            parsed_yaml["outputs"]["content"],
+        outputs_table = create_table(
             parsed_yaml["outputs"]["header"],
-            tablefmt="github",
+            parsed_yaml["outputs"]["content"],
         )
-        parsed_yaml["outputs"] = f"\n\n{outputs_table}\n\n"
+        parsed_yaml["outputs"] = f"\n\n{outputs_table}\n"
     else:
         parsed_yaml["outputs"] = "\n\nThis Action does not have any outputs.\n\n"
 
@@ -152,6 +152,22 @@ def update_style(parsed_yaml: dict) -> dict:
     parsed_yaml["usage"] = f"\n\n```yaml\n{parsed_yaml['usage']}```\n\n"
 
     return parsed_yaml
+
+
+def create_table(data_header: list, data_content) -> str:
+    """creates markdown tabels"""
+    transposed_data = list(zip(data_header, *data_content))
+    column_size = [len(max(i, key=len)) for i in transposed_data]
+    separator = ["-" * i for i in column_size]
+    data = [data_header, separator, *data_content]
+    result = ""
+    for row in data:
+        result += (
+            "".join([f"| {row[i]: <{column_size[i]}} " for i in range(len(row))])
+            + "|\n"
+        )
+
+    return result
 
 
 def replace_tag(
@@ -206,11 +222,6 @@ def generate_docs(docs_file: str = "README.md") -> int:
         for item in docs_items.keys():
             content = replace_tag(content, item, docs_items[item])
 
-        # FIXME: tabular overwrite
-        content = content.replace("-|-", " | ")
-        content = content.replace("|-", "| ")
-        content = content.replace("-|", " |")
-
         with open(docs_path, "r") as f:
             old_content = f.read()
 
@@ -218,7 +229,7 @@ def generate_docs(docs_file: str = "README.md") -> int:
             failed = True
             with open(docs_path, "w") as f:
                 print(f"generating: {docs_path}")
-                f.write(content)
+                f.write(content.lstrip())
 
     return 1 if failed else 0
 
