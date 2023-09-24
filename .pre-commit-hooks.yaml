@@ -1,4 +1,4 @@
-- id: genterate-gh-actions-docs
+- id: generate-gh-actions-docs
   name: Generate Github actions docs
   description: generate-gh-actions-docs
   entry: github-actions-docs
