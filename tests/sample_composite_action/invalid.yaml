@@ -1,0 +1,25 @@
+name: Invalid Test
+description: Etiam vel sagittis massa, vel dictum mi.
+
+inputs:
+  tristique:
+    required: false
+    description: In pretium at libero in tempor.
+  sollicitudin:
+    default: "default_param"
+    description: |-
+      Nunc odio eros, sollicitudin cursus eros at, finibus sollicitudin nisi.
+  mattis:
+    required: true
+    description: |
+      Praesent ut magna venenatis, facilisis erat consectetur, accumsan turpis.
+      Pellentesque vulputate, arcu id mattis interdum, ipsum risus auctor eros.
+      Eget viverra lacus ex vitae urna.
+  pellentesque:
+    required: false
+    default: 'false'
+    description: Nam et malesuada metus, eu interdum ante.
+
+runs:
+  steps:
+    - uses: actions/checkout@v3
