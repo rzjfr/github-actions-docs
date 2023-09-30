@@ -38,7 +38,7 @@ This Action does not have any outputs.
 
 ```yaml
 - name: Example Usage
-  uses: /tests/sample_composite_action@main
+  uses: rzjfr/github-actions-docs/tests/sample_composite_action@main
   with:
     tristique: ""
     sollicitudin: "default_param"

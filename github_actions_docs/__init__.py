@@ -4,7 +4,7 @@ import sys
 
 from importlib_metadata import metadata
 
-from github_actions_docs.canvas import generate_usage, replace_tag, update_style
+from github_actions_docs.canvas import generate_usage, replace_tags, update_style
 from github_actions_docs.errors import GithubActionsDocsError
 from github_actions_docs.parser import parse_yaml
 
@@ -36,16 +36,19 @@ def generate_docs(
     file_paths: list,
     output_mode: str = "inject",
     verbose: bool = False,
-    docs_file: str = "README.md",
+    docs_filename: str = "README.md",
+    uses_ref_override: str = "",
 ) -> int:
     """
     Params:
         file_paths: list of files requires to be evaluated
-        output_mode: inject to the existing docs_file or create new based on the
+        output_mode: inject to the existing docs_filename or create new based on the
             DOCS_TEMPLATE
         verbose: more logs
-        docs_file: name of the markdown file which will be created next to the
+        docs_filename: name of the markdown file which will be created next to the
             input file.
+        uses_ref_override: If empty tries to use the latest git tag and then
+            branch name.
 
     Returns:
         exit code, 1 if any of input files has been changed, 0 if no change.
@@ -67,12 +70,15 @@ def generate_docs(
             f"/{yaml_path.parent}" if parsed_yaml["runs"] == "composite" else ""
         )
         parsed_yaml["usage"] = generate_usage(
-            parsed_yaml["inputs"]["content"], action_path
+            parsed_yaml["inputs"]["content"],
+            uses_ref_override,
+            action_path,
+            yaml_path.name,
         )
 
         docs_items = update_style(parsed_yaml)
 
-        docs_path = yaml_path.parent.joinpath(docs_file)
+        docs_path = yaml_path.parent.joinpath(docs_filename)
         if not docs_path.is_file() or output_mode == "replace":
             with open(docs_path, "w") as f:
                 f.write(DOCS_TEMPLATE)
@@ -81,7 +87,7 @@ def generate_docs(
             content = f.read()
 
         for item in docs_items.keys():
-            content = replace_tag(content, item, docs_items[item])
+            content = replace_tags(content, item, docs_items[item])
 
         with open(docs_path, "r") as f:
             old_content = f.read()
@@ -136,6 +142,13 @@ def _build_args_parser() -> argparse.ArgumentParser:
         help="creates or updates output on the same path as the input.",
     )
     parser.add_argument(
+        "--uses-ref-override",
+        type=str,
+        default="",
+        help="Override the uses reference in usage section.\
+                By default latest tag or current branch name will be used.",
+    )
+    parser.add_argument(
         "input_files_path",
         nargs="+",
         type=str,
@@ -148,7 +161,11 @@ def main():
     """main"""
     args = _build_args_parser().parse_args()
     exit_code = generate_docs(
-        args.input_files_path, args.output_mode, args.verbose, args.docs_filename
+        file_paths=args.input_files_path,
+        output_mode=args.output_mode,
+        verbose=args.verbose,
+        docs_filename=args.docs_filename,
+        uses_ref_override=args.uses_ref_override,
     )
     sys.exit(exit_code)
 

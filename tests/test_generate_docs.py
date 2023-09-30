@@ -20,7 +20,10 @@ class TestGenerateDocs(unittest.TestCase):
             os.remove(delete_file)
 
     def test_generated_docs_no_readme(self):
-        generate_docs(file_paths=["tests/sample_composite_action/valid.yaml"])
+        generate_docs(
+            file_paths=["tests/sample_composite_action/valid.yaml"],
+            uses_ref_override="main",
+        )
         path = pathlib.Path("tests/sample_composite_action/README.md")
         self.assertTrue(path.is_file())  # generated file exists
 
@@ -33,7 +36,8 @@ class TestGenerateDocs(unittest.TestCase):
     def test_generated_docs_existing_readme(self):
         generate_docs(
             file_paths=["tests/sample_composite_action/valid.yaml"],
-            docs_file="EXISTING_README.md",
+            docs_filename="EXISTING_README.md",
+            uses_ref_override="main",
         )
         path = pathlib.Path("tests/sample_composite_action/EXISTING_README.md")
         self.assertTrue(path.is_file())  # generated file exists

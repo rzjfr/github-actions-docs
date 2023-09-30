@@ -1,18 +1,38 @@
 import re
 
-import git
+from github_actions_docs.git import get_current_branch, get_latest_tag, get_remote_url
 
 
-def generate_usage(inputs: list, composit_action_path: str = "") -> str:
-    repo = git.Repo(".")
-    tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-    latest_tag = str(tags[-1]) if tags else "main"
-    if repo.remotes:
-        repo_ref = "/".join(repo.remotes[0].url.split("/")[3:])
+def generate_usage(
+    inputs: list,
+    uses_ref_override: str = "",
+    action_path: str = "",
+    action_filename: str = "action.yaml",
+) -> str:
+    """Generates usage section
+    By default it tries to constuct the reference in following format:
+    `{owner}/{repo}/.github/workflows/{filename}@{ref}`
+    based on the git repository setting of the current folder. Otherwise
+    it would be in `./.github/<actions|workflows>/{filename}` format.
+    [(docs)](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses)
+
+    Params:
+        inputs: github actions inputs.
+        uses_ref_override: overrides the ref section of `uses` section of if set.
+        action_path: path of the github actions.
+        action_filename: filename of the github actions.
+
+    Returns:
+        yaml in form of string can be used directly in the output file.
+    """
+    if remote_url := get_remote_url():
+        ref = uses_ref_override or get_latest_tag() or get_current_branch()
+        uses_result = f"{remote_url}{action_path}@{ref}"
     else:
-        repo_ref = "owner/repoitory_name"
+        uses_result = f"./.github/{action_path}/{action_filename}"
+
     result = "- name: Example Usage\n"
-    result += f"  uses: {repo_ref}{composit_action_path}@{latest_tag}\n"
+    result += f"  uses: {uses_result}\n"
     result += "  with:\n"
     for item in inputs:
         result += f"    {item[0]}: {item[3]}\n"
@@ -64,7 +84,7 @@ def create_table(data_header: list, data_content) -> str:
     return result
 
 
-def replace_tag(
+def replace_tags(
     content: str, tag_name: str, tag_value: str, tag_prefix: str = "GH_DOCS"
 ) -> str:
     """ """
