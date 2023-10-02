@@ -3,7 +3,7 @@ name = "github_actions_docs"
 description = "Generate github actions docs"
 version = "0.2.0"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
     'Development Status :: 0 - Alfa',
     'Environment :: Console',
