@@ -17,7 +17,7 @@ def run_git_command(command: str = "git status") -> str | None:
 
 def get_latest_tag() -> str | None:
     result = run_git_command(
-        "git for-each-ref --sort=-creatordate --format '%(refname)' refs/tags --count=1"
+        "git for-each-ref --sort=-version:refname --format '%(refname)' refs/tags --count=1"
     )
     try:
         return result.split("/")[2]
