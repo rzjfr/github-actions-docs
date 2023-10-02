@@ -5,9 +5,10 @@ from github_actions_docs.git import get_current_branch, get_latest_tag, get_remo
 
 def generate_usage(
     inputs: list,
+    action_type: str,
     uses_ref_override: str = "",
     action_path: str = "",
-    action_filename: str = "action.yaml",
+    action_filename: str = "",
 ) -> str:
     """Generates usage section
     By default it tries to constuct the reference in following format:
@@ -27,43 +28,56 @@ def generate_usage(
     """
     if remote_url := get_remote_url():
         ref = uses_ref_override or get_latest_tag() or get_current_branch()
-        uses_result = f"{remote_url}{action_path}@{ref}"
+        uses_result = f"{remote_url}{action_path}{action_filename}@{ref}"
     else:
-        uses_result = f"./.github/{action_path}/{action_filename}"
+        uses_result = f"./.github/{action_path}{action_filename}"
 
-    result = "- name: Example Usage\n"
-    result += f"  uses: {uses_result}\n"
-    result += "  with:\n"
-    for item in inputs:
-        result += f"    {item[0]}: {item[3]}\n"
+    result = ""
+    if action_type == "reusable workflow":
+        result += "jobs:\n"
+        result += "  call-workflow:\n"
+        indentation = 4
+    else:
+        result += "- name: Example Usage\n"
+        indentation = 2
+    result += f"{' '*indentation}uses: {uses_result}\n"
+    if inputs:
+        result += f"{' '*indentation}with:\n"
+        for item in inputs:
+            result += f"{' '*(indentation+2)}{item[0]}: {item[-1]}\n"
 
     return result
 
 
-def update_style(parsed_yaml: dict) -> dict:
-    if parsed_yaml["inputs"]["content"]:
-        inputs_table = create_table(
-            parsed_yaml["inputs"]["header"],
-            parsed_yaml["inputs"]["content"],
+def update_table_style(parsed_yaml: dict, key: str) -> dict:
+    if parsed_yaml.get(key) and parsed_yaml[key]["content"]:
+        table = create_table(
+            parsed_yaml[key]["header"],
+            parsed_yaml[key]["content"],
         )
-        parsed_yaml["inputs"] = f"\n\n{inputs_table}\n"
+        parsed_yaml[key] = f"\n\n{table}\n"
     else:
-        parsed_yaml["inputs"] = "\n\nThis Action does not have any inputs.\n\n"
+        parsed_yaml[key] = f"\n\nThis item does not have any {key}.\n\n"
+    return parsed_yaml
 
-    if parsed_yaml["outputs"]["content"]:
-        outputs_table = create_table(
-            parsed_yaml["outputs"]["header"],
-            parsed_yaml["outputs"]["content"],
-        )
-        parsed_yaml["outputs"] = f"\n\n{outputs_table}\n"
-    else:
-        parsed_yaml["outputs"] = "\n\nThis Action does not have any outputs.\n\n"
+
+def update_style(parsed_yaml: dict) -> dict:
+    for item in ["inputs", "outputs", "secrets"]:
+        parsed_yaml = update_table_style(parsed_yaml, item)
 
     parsed_yaml["runs"] = f"`{parsed_yaml['runs']}`"
 
     parsed_yaml["description"] = f"\n\n{parsed_yaml['description'].strip()}\n\n"
 
     parsed_yaml["usage"] = f"\n\n```yaml\n{parsed_yaml['usage']}```\n\n"
+    if parsed_yaml.get("default"):
+        parsed_yaml["default"] = parsed_yaml["default"].lower
+        if parsed_yaml.get("type"):
+            parsed_yaml["default"] = parsed_yaml["default"].strip("'\"")
+
+    if table_item := parsed_yaml.get("contents_table_item"):
+        sanitized = re.sub(r"[^a-z\d\s]", "", table_item.lower()).replace(" ", "-")
+        parsed_yaml["contents_table_item"] = f"- [{table_item}](#{sanitized})\n"
 
     return parsed_yaml
 
@@ -103,3 +117,16 @@ def replace_tags(
         content,
     )
     return content
+
+
+def find_table_of_contents(content: str, tag_prefix: str = "GH_DOCS") -> str:
+    """ """
+    identifier = f"{tag_prefix}_CONTENTS_TABLE_ITEM"
+    if result := re.search(
+        rf"(<!-- BEGIN_{identifier} -->)(.*)(<!-- END_{identifier} -->)",
+        content,
+        flags=re.DOTALL,
+    ):
+        return result.group(2)
+    else:
+        return ""

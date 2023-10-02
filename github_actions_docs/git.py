@@ -29,7 +29,7 @@ def get_latest_tag() -> str | None:
 def get_remote_url() -> str | None:
     result = run_git_command("git ls-remote --get-url origin")
     try:
-        return result.split(":")[1].rstrip(".git")
+        return "/".join(result.replace(":", "/").split("/")[-2:]).rstrip(".git")
     except (IndexError, AttributeError):
         return None
     raise GithubActionsDocsError("unkown git issue getting git remote url")
