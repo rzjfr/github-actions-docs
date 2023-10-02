@@ -10,43 +10,97 @@ from github_actions_docs import generate_docs
 
 class TestGenerateDocs(unittest.TestCase):
     def setUp(self):
-        files = glob("tests/sample_input/*.md")
+        files = glob("tests/input_docs/*.md")
         for sample_file in files:
-            shutil.copy(sample_file, "tests/sample_composite_action")
+            shutil.copy(sample_file, "tests/input_files")
 
     def tearDown(self):
-        files_to_be_deleted = glob("tests/sample_composite_action/*.md")
+        files_to_be_deleted = glob("tests/input_files/*.md")
         for delete_file in files_to_be_deleted:
             os.remove(delete_file)
 
-    def test_generated_docs_no_readme(self):
-        generate_docs(file_paths=["tests/sample_composite_action/valid.yaml"])
-        path = pathlib.Path("tests/sample_composite_action/README.md")
+    def test_generated_docs_composite_no_readme(self):
+        generate_docs(
+            file_paths=["tests/input_files/valid_composite.yaml"],
+            uses_ref_override="main",
+        )
+        path = pathlib.Path("tests/input_files/README.md")
         self.assertTrue(path.is_file())  # generated file exists
 
         comparison = filecmp.cmp(
-            "tests/sample_composite_action/README.md",
-            "tests/sample_output/README_OUTPUT.md",
+            "tests/input_files/README.md",
+            "tests/output_docs/COMPOSITE_README_OUTPUT.md",
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
-    def test_generated_docs_existing_readme(self):
+    def test_generated_docs_composite_existing_readme(self):
         generate_docs(
-            file_paths=["tests/sample_composite_action/valid.yaml"],
-            docs_file="EXISTING_README.md",
+            file_paths=["tests/input_files/valid_composite.yaml"],
+            docs_filename="EXISTING_README.md",
+            uses_ref_override="main",
         )
-        path = pathlib.Path("tests/sample_composite_action/EXISTING_README.md")
+        path = pathlib.Path("tests/input_files/EXISTING_README.md")
         self.assertTrue(path.is_file())  # generated file exists
 
         comparison = filecmp.cmp(
-            "tests/sample_composite_action/EXISTING_README.md",
-            "tests/sample_output/EXISTING_README_OUTPUT.md",
+            "tests/input_files/EXISTING_README.md",
+            "tests/output_docs/EXISTING_README_OUTPUT.md",
+        )
+        self.assertTrue(comparison)  # generated file content is as expected
+
+    def test_generated_docs_workflow_no_readme(self):
+        generate_docs(
+            file_paths=["tests/input_files/valid_workflow_2.yaml"],
+            uses_ref_override="main",
+        )
+        path = pathlib.Path("tests/input_files/README.md")
+        self.assertTrue(path.is_file())  # generated file exists
+        comparison = filecmp.cmp(
+            "tests/input_files/README.md",
+            "tests/output_docs/WORKFLOW_README_OUTPUT.md",
+        )
+        self.assertTrue(comparison)  # generated file content is as expected
+
+    def test_generated_docs_workflow_update_readme(self):
+        generate_docs(
+            file_paths=["tests/input_files/valid_workflow_1.yaml"],
+            uses_ref_override="main",
+        )
+        generate_docs(
+            file_paths=["tests/input_files/valid_workflow_2.yaml"],
+            uses_ref_override="main",
+        )
+        generate_docs(
+            file_paths=["tests/input_files/valid_workflow_1.yaml"],
+            uses_ref_override="main",
+        )
+        path = pathlib.Path("tests/input_files/README.md")
+        self.assertTrue(path.is_file())  # generated file exists
+
+        comparison = filecmp.cmp(
+            "tests/input_files/README.md",
+            "tests/output_docs/WORKFLOW_UPDATE_README_OUTPUT.md",
+        )
+        self.assertTrue(comparison)  # generated file content is as expected
+
+    def test_generated_docs_workflow_existing_readme(self):
+        generate_docs(
+            file_paths=["tests/input_files/valid_workflow_2.yaml"],
+            docs_filename="EXISTING_README.md",
+            uses_ref_override="main",
+        )
+        path = pathlib.Path("tests/input_files/EXISTING_README.md")
+        self.assertTrue(path.is_file())  # generated file exists
+
+        comparison = filecmp.cmp(
+            "tests/input_files/EXISTING_README.md",
+            "tests/output_docs/WORKFLOW_EXISTING_README_OUTPUT.md",
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
     def test_generate_docs_invalid(self):
-        generate_docs(file_paths=["tests/sample_composite_action/invalid.yaml"])
-        path = pathlib.Path("tests/sample_composite_action/README.md")
+        generate_docs(file_paths=["tests/input_files/invalid.yaml"])
+        path = pathlib.Path("tests/input_files/README.md")
         self.assertFalse(path.is_file())  # file should not exist
 
 

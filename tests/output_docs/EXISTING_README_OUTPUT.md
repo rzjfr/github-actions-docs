@@ -16,7 +16,7 @@ Etiam dolor augue, posuere in pretium a, tristique ac elit.
 
 ```yaml
 - name: Example Usage
-  uses: /tests/sample_composite_action@main
+  uses: rzjfr/github-actions-docs/tests/input_files@main
   with:
     tristique: ""
     sollicitudin: "default_param"
@@ -32,10 +32,10 @@ Etiam dolor augue, posuere in pretium a, tristique ac elit.
 
 | parameter    | description                                                                                                                                                            | required | default         |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------- |
-| tristique    | In pretium at libero in tempor.                                                                                                                                        | False    | ""              |
-| sollicitudin | Nunc odio eros, sollicitudin cursus eros at, finibus sollicitudin nisi.                                                                                                | True     | "default_param" |
-| mattis       | Praesent ut magna venenatis, facilisis erat consectetur, accumsan turpis.Pellentesque vulputate, arcu id mattis interdum, ipsum risus auctor eros.Suspendisse potenti. | True     | ""              |
-| pellentesque | Nam et malesuada metus, eu interdum ante.                                                                                                                              | False    | "false"         |
+| tristique    | In pretium at libero in tempor.                                                                                                                                        | false    | ""              |
+| sollicitudin | Nunc odio eros, sollicitudin cursus eros at, finibus sollicitudin nisi.                                                                                                | true     | "default_param" |
+| mattis       | Praesent ut magna venenatis, facilisis erat consectetur, accumsan turpis.Pellentesque vulputate, arcu id mattis interdum, ipsum risus auctor eros.Suspendisse potenti. | true     | ""              |
+| pellentesque | Nam et malesuada metus, eu interdum ante.                                                                                                                              | false    | "false"         |
 
 <!-- END_GH_DOCS_INPUTS -->
 
