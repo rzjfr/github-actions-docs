@@ -124,7 +124,7 @@ def construct_gha_workflow_content(yaml_content: dict) -> dict:
         "header": ["parameter", "description", "required"],
         "content": secrets_content,
     }
-    outputs, output_content = yaml_content.get("outputs", {}), []
+    outputs, output_content = yaml_content["on"]["workflow_call"].get("outputs", {}), []
     for item in outputs.keys():
         output_content.append(
             [
@@ -146,7 +146,7 @@ def parse_yaml(yaml_path: str) -> dict:
     result = {}
     result["name"] = yaml_content["name"]
     result["description"] = yaml_content.get(
-        "description", f"[{yaml_path}]({yaml_path})"
+        "description", f"[{yaml_path}]({yaml_path.name})"
     )
 
     if action_type == "action":

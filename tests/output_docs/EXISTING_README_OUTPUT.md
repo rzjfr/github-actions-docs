@@ -16,7 +16,7 @@ Etiam dolor augue, posuere in pretium a, tristique ac elit.
 
 ```yaml
 - name: Example Usage
-  uses: rzjfr/github-actions-docs/tests/sample_composite_action@main
+  uses: rzjfr/github-actions-docs/tests/input_files@main
   with:
     tristique: ""
     sollicitudin: "default_param"
