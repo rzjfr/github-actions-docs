@@ -63,7 +63,7 @@ Sample `.pre-commit-config.yaml`
 
 ```yaml
 - repo: https://github.com/rzjfr/github-actions-docs
-  rev: 0.2.0
+  rev: 0.2.2
   hooks:
     - id: generate-gh-actions-docs
 ```
