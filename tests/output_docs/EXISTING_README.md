@@ -15,7 +15,7 @@ Etiam dolor augue, posuere in pretium a, tristique ac elit.
 <!-- BEGIN_GH_DOCS_USAGE -->
 
 ```yaml
-- name: Example Usage
+- name: Valid Test
   uses: rzjfr/github-actions-docs/tests/input_files@main
   with:
     tristique: ""

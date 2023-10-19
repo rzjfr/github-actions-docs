@@ -48,8 +48,7 @@ DOCS_TEMPLATE_WORKFLOW_TOP = """# <!-- GH_DOCS_TITLE -->
 
 DOCS_TEMPLATES = {
     "composite": DOCS_TEMPLATE_ACTION,
-    "javascript": DOCS_TEMPLATE_ACTION,
-    "docker": DOCS_TEMPLATE_ACTION,
+    "generic": DOCS_TEMPLATE_ACTION,
     "reusable workflow": DOCS_TEMPLATE_WORKFLOW_TOP,
     "reusable workflow item": DOCS_TEMPLATE_WORKFLOW_ITEM,
 }

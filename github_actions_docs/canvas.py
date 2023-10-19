@@ -9,6 +9,7 @@ def generate_usage(
     uses_ref_override: str = "",
     action_path: str = "",
     action_filename: str = "",
+    action_name: str = "Example Usage",
 ) -> str:
     """Generates usage section
     By default it tries to constuct the reference in following format:
@@ -38,7 +39,7 @@ def generate_usage(
         result += "  call-workflow:\n"
         indentation = 4
     else:
-        result += "- name: Example Usage\n"
+        result += f"- name: {action_name}\n"
         indentation = 2
     result += f"{' '*indentation}uses: {uses_result}\n"
     if inputs:
@@ -94,7 +95,6 @@ def create_table(data_header: list, data_content) -> str:
             "".join([f"| {row[i]: <{column_size[i]}} " for i in range(len(row))])
             + "|\n"
         )
-
     return result
 
 

@@ -53,24 +53,20 @@ def generate_docs(
             logging.debug(f"ignoring invalid file: {path}\n  reason: {e}")
             continue  # it's not a valid github action or reusable workflow file
 
-        action_path = (
-            f"/{yaml_path.parent}"
-            if parsed_yaml["runs"] in ["composite", "reusable workflow"]
-            else ""
-        )
+        action_path = f"/{yaml_path.parent}"
         action_filename = (
             f"/{yaml_path.name}" if parsed_yaml["runs"] == "reusable workflow" else ""
         )
+        action_type = parsed_yaml["runs"]
+        action_name = parsed_yaml["name"]
         parsed_yaml["usage"] = generate_usage(
             parsed_yaml["inputs"]["content"],
             parsed_yaml["runs"],
             uses_ref_override,
             action_path,
             action_filename,
+            action_name,
         )
-
-        action_type = parsed_yaml["runs"]
-        action_name = parsed_yaml["name"]
         docs_items = update_style(parsed_yaml)
         changed_file = create_or_update_docs_file(
             docs_items,
@@ -81,6 +77,8 @@ def generate_docs(
             action_name,
         )
         changed_files.append(changed_file)
+        if changed_file:
+            logging.error(f"changed file: {yaml_path}")
     logging.debug(f"number of changed files: {sum(changed_files)}/{len(file_paths)}")
     return 1 if any(changed_files) else 0
 
@@ -92,38 +90,60 @@ def create_or_update_docs_file(
     output_mode: str,
     action_type: str,
     action_name: str,
+    tag_prefix: str = "GH_DOCS",
 ) -> bool:
     """
     Returns:
         True if the file has been updated
     """
+    file_changed = False
     docs_path = yaml_path.parent.joinpath(docs_filename)
-    template = DOCS_TEMPLATES[action_type]
-    item_id = (
-        re.sub(r"[^a-z\d\s]", "", docs_items["name"].lower()).replace(" ", "_").upper()
-    )
+    if action_type not in DOCS_TEMPLATES:
+        template = DOCS_TEMPLATES["generic"]
+    else:
+        template = DOCS_TEMPLATES[action_type]
 
     # Create file based on the template
-    if not docs_path.is_file() or output_mode == "replace":
+    create_file_from_template = not docs_path.is_file() or output_mode == "replace"
+    if create_file_from_template:
         with open(docs_path, "w") as f:
             f.write(template)
+            file_changed = True
 
-    # Read the existing file
+    # Read file
     with open(docs_path, "r") as f:
         content = f.read()
 
-    # Add if item_id does not exist
-    if action_type == "reusable workflow" and item_id not in content:
-        with open(docs_path, "a") as f:
-            f.write(
-                "\n"
-                + DOCS_TEMPLATES["reusable workflow item"].replace("ITEM_ID", item_id)
-            )
-        with open(docs_path, "r") as f:
+    # Append the template if none of the valid tags already exist
+    valid_tag_exists = re.search(rf"<!--\s(BEGIN_)?{tag_prefix}(_.+)\s-->", content)
+    if not valid_tag_exists and output_mode == "inject":
+        with open(docs_path, "a+") as f:
+            f.write(re.sub("#.+\n", "", template, count=1))
+            f.flush()
+            f.seek(0)
+            file_changed = True
             content = f.read()
 
-    # Update tags
     if action_type == "reusable workflow":
+        item_id = (
+            re.sub(r"[^a-z\d\s]", "", docs_items["name"].lower())
+            .replace(" ", "_")
+            .upper()
+        )
+        # Add if item_id wich represents the respective action does not exist
+        if item_id not in content:
+            with open(docs_path, "a+") as f:
+                f.write(
+                    "\n"
+                    + DOCS_TEMPLATES["reusable workflow item"].replace(
+                        "ITEM_ID", item_id
+                    )
+                )
+                f.flush()
+                f.seek(0)
+                file_changed = True
+                content = f.read()
+        # Update table of contents
         existing_table_of_contents = find_table_of_contents(content)
         if docs_items["contents_table_item"] not in existing_table_of_contents:
             table_of_contents = (
@@ -134,15 +154,17 @@ def create_or_update_docs_file(
         docs_items["contents_table_item"] = "\n\n" + table_of_contents.lstrip("\n")
 
     for item in docs_items.keys():
-        content = replace_tags(content, item, docs_items[item])
+        content = replace_tags(content, item, docs_items[item], tag_prefix)
         if action_type == "reusable workflow":
-            content = replace_tags(content, f"{item}_{item_id}", docs_items[item])
+            content = replace_tags(
+                content, f"{item}_{item_id}", docs_items[item], tag_prefix
+            )
 
     # Check if anything has changed
     with open(docs_path, "r") as f:
         old_content = f.read()
 
-    if change_status := not old_content == content:
+    if change_status := (not old_content == content) or file_changed:
         logging.info(f"generating: {docs_path}")
         with open(docs_path, "w") as f:
             f.write(content.lstrip())

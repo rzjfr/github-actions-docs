@@ -1,4 +1,15 @@
-# <!-- BEGIN_GH_DOCS_NAME -->Valid Test<!-- END_GH_DOCS_NAME -->
+# Github Action
+
+<!-- action-similique -->
+
+Et similique facilis nesciunt adipisci. Deleniti voluptas quis ut.
+Reprehenderit quaerat quidem qui. Et assumenda officiis ut delectus odio autem vel.
+
+<!-- docs-nihil -->
+
+# Nihil
+
+Aut nihil ut culpa.
 
 <!-- BEGIN_GH_DOCS_DESCRIPTION -->
 
@@ -37,7 +48,7 @@ This item does not have any outputs.
 <!-- BEGIN_GH_DOCS_USAGE -->
 
 ```yaml
-- name: Example Usage
+- name: Valid Test
   uses: rzjfr/github-actions-docs/tests/input_files@main
   with:
     tristique: ""

@@ -29,7 +29,7 @@ class TestGenerateDocs(unittest.TestCase):
 
         comparison = filecmp.cmp(
             "tests/input_files/README.md",
-            "tests/output_docs/COMPOSITE_README_OUTPUT.md",
+            "tests/output_docs/COMPOSITE_README.md",
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
@@ -44,7 +44,22 @@ class TestGenerateDocs(unittest.TestCase):
 
         comparison = filecmp.cmp(
             "tests/input_files/EXISTING_README.md",
-            "tests/output_docs/EXISTING_README_OUTPUT.md",
+            "tests/output_docs/EXISTING_README.md",
+        )
+        self.assertTrue(comparison)  # generated file content is as expected
+
+    def test_generated_docs_composite_existing_not_tags_readme(self):
+        generate_docs(
+            file_paths=["tests/input_files/valid_composite.yaml"],
+            docs_filename="EXISTING_NO_TAGS_README.md",
+            uses_ref_override="main",
+        )
+        path = pathlib.Path("tests/input_files/EXISTING_NO_TAGS_README.md")
+        self.assertTrue(path.is_file())  # generated file exists
+
+        comparison = filecmp.cmp(
+            "tests/input_files/EXISTING_NO_TAGS_README.md",
+            "tests/output_docs/EXISTING_NO_TAGS_README.md",
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
@@ -57,7 +72,7 @@ class TestGenerateDocs(unittest.TestCase):
         self.assertTrue(path.is_file())  # generated file exists
         comparison = filecmp.cmp(
             "tests/input_files/README.md",
-            "tests/output_docs/WORKFLOW_README_OUTPUT.md",
+            "tests/output_docs/WORKFLOW_README.md",
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
@@ -79,7 +94,7 @@ class TestGenerateDocs(unittest.TestCase):
 
         comparison = filecmp.cmp(
             "tests/input_files/README.md",
-            "tests/output_docs/WORKFLOW_UPDATE_README_OUTPUT.md",
+            "tests/output_docs/WORKFLOW_UPDATE_README.md",
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
@@ -94,7 +109,7 @@ class TestGenerateDocs(unittest.TestCase):
 
         comparison = filecmp.cmp(
             "tests/input_files/EXISTING_README.md",
-            "tests/output_docs/WORKFLOW_EXISTING_README_OUTPUT.md",
+            "tests/output_docs/WORKFLOW_EXISTING_README.md",
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
