@@ -12,12 +12,12 @@ from github_actions_docs.canvas import (
     replace_tags,
     update_style,
 )
+from github_actions_docs.configs import DOCS_TEMPLATES
 from github_actions_docs.errors import (
     GithubActionsDocsError,
     GithubActionsDocsSchemaError,
 )
 from github_actions_docs.parser import parse_yaml
-from github_actions_docs.templates import DOCS_TEMPLATES
 
 __version__ = metadata("github-actions-docs")["Version"]
 logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
@@ -99,9 +99,9 @@ def create_or_update_docs_file(
     file_changed = False
     docs_path = yaml_path.parent.joinpath(docs_filename)
     if action_type not in DOCS_TEMPLATES:
-        template = DOCS_TEMPLATES["generic"]
+        template = DOCS_TEMPLATES["generic"].format(prefix=tag_prefix)
     else:
-        template = DOCS_TEMPLATES[action_type]
+        template = DOCS_TEMPLATES[action_type].format(prefix=tag_prefix)
 
     # Create file based on the template
     create_file_from_template = not docs_path.is_file() or output_mode == "replace"
@@ -135,9 +135,9 @@ def create_or_update_docs_file(
             with open(docs_path, "a+") as f:
                 f.write(
                     "\n"
-                    + DOCS_TEMPLATES["reusable workflow item"].replace(
-                        "ITEM_ID", item_id
-                    )
+                    + DOCS_TEMPLATES["reusable workflow item"]
+                    .format(prefix=tag_prefix)
+                    .replace("ITEM_ID", item_id)
                 )
                 f.flush()
                 f.seek(0)

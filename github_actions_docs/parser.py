@@ -1,17 +1,15 @@
 from ruamel.yaml import YAML
 
+from github_actions_docs.configs import (
+    GH_DOCS_WORKFLOWS_TABLE_OF_CONTENT_TITLE,
+    GH_DOCS_WORKFLOWS_TITLE,
+    GHA_ACTION_REQUIRED_FIELDS,
+    GHA_WORKFLOW_REQUIRED_FIELDS,
+)
 from github_actions_docs.errors import (
     GithubActionsDocsError,
     GithubActionsDocsSchemaError,
 )
-
-# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputsinput_iddefault
-GHA_ACTION_REQUIRED_FIELDS = {"name", "description", "runs"}
-# https://docs.github.com/en/actions/using-workflows/reusing-workflows
-GHA_WORKFLOW_REQUIRED_FIELDS = {"name", "on", "jobs"}
-
-GH_DOCS_WORKFLOWS_TITLE = "Reusable Workflows"
-GH_DOCS_WORKFLOWS_TABLE_OF_CONTENT_TITLE = "List of workflows"
 
 
 def find_gh_actions_type(yaml_path: str) -> tuple[str, dict]:
