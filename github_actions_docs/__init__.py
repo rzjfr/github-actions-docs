@@ -1,23 +1,17 @@
 import argparse
 import logging
-import pathlib
 import re
 import sys
 
 from importlib_metadata import metadata
 
-from github_actions_docs.canvas import (
-    find_table_of_contents,
-    generate_usage,
-    replace_tags,
-    update_style,
-)
 from github_actions_docs.configs import DOCS_TEMPLATES
 from github_actions_docs.errors import (
     GithubActionsDocsError,
     GithubActionsDocsSchemaError,
 )
 from github_actions_docs.parser import GithubActions
+from github_actions_docs.styler import UpdateDocsStyle
 
 __version__ = metadata("github-actions-docs")["Version"]
 logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
@@ -28,6 +22,7 @@ def generate_docs(
     output_mode: str = "inject",
     docs_filename: str = "README.md",
     uses_ref_override: str = "",
+    tag_prefix: str = "GH_DOCS",
 ) -> int:
     """
     Params:
@@ -47,35 +42,21 @@ def generate_docs(
         logging.debug(f"evaluating: {path}")
         try:
             github_actions = GithubActions(path)
-            parsed_yaml = github_actions.parsed_yaml
-        except (GithubActionsDocsError, GithubActionsDocsSchemaError) as e:
+            parsed_yaml = github_actions.parse()
+            action_type = parsed_yaml["runs"]
+        except (GithubActionsDocsError, GithubActionsDocsSchemaError, KeyError) as e:
             logging.debug(f"ignoring invalid file: {path}\n  reason: {e}")
             continue  # it's not a valid github action or reusable workflow file
 
-        action_path = f"/{github_actions.yaml_path.parent}"
-        action_filename = (
-            f"/{github_actions.yaml_path.name}"
-            if parsed_yaml["runs"] == "reusable workflow"
-            else ""
-        )
-        action_type = parsed_yaml["runs"]
-        action_name = parsed_yaml["name"]
-        parsed_yaml["usage"] = generate_usage(
-            parsed_yaml["inputs"]["content"],
-            parsed_yaml["runs"],
-            uses_ref_override,
-            action_path,
-            action_filename,
-            action_name,
-        )
-        docs_items = update_style(parsed_yaml)
+        UpdateDocsStyle(parsed_yaml, github_actions.yaml_path, uses_ref_override)
+
         changed_file = create_or_update_docs_file(
-            docs_items,
+            parsed_yaml,
             github_actions.yaml_path,
             docs_filename,
             output_mode,
             action_type,
-            action_name,
+            tag_prefix,
         )
         changed_files.append(changed_file)
         if changed_file:
@@ -86,11 +67,10 @@ def generate_docs(
 
 def create_or_update_docs_file(
     docs_items: dict,
-    yaml_path: pathlib.PosixPath,
+    yaml_path: str,
     docs_filename: str,
     output_mode: str,
     action_type: str,
-    action_name: str,
     tag_prefix: str = "GH_DOCS",
 ) -> bool:
     """
@@ -174,6 +154,40 @@ def create_or_update_docs_file(
     return change_status
 
 
+def replace_tags(
+    content: str, tag_name: str, tag_value: str, tag_prefix: str = "GH_DOCS"
+) -> str:
+    """ """
+    identifier = f"{tag_prefix}_{tag_name.upper()}"
+    # Update tags
+    content = re.sub(
+        rf"(<!-- BEGIN_{identifier} -->)(.*)(<!-- END_{identifier} -->)",
+        rf"\1{tag_value}\3",
+        content,
+        flags=re.DOTALL,
+    )
+    # Generate
+    content = re.sub(
+        rf"<!-- {identifier} -->",
+        f"<!-- BEGIN_{identifier} -->{tag_value}<!-- END_{identifier} -->",
+        content,
+    )
+    return content
+
+
+def find_table_of_contents(content: str, tag_prefix: str = "GH_DOCS") -> str:
+    """ """
+    identifier = f"{tag_prefix}_CONTENTS_TABLE_ITEM"
+    if result := re.search(
+        rf"(<!-- BEGIN_{identifier} -->)(.*)(<!-- END_{identifier} -->)",
+        content,
+        flags=re.DOTALL,
+    ):
+        return result.group(2)
+    else:
+        return ""
+
+
 def _build_args_parser() -> argparse.ArgumentParser:
     """
     Returns:
@@ -193,6 +207,17 @@ def _build_args_parser() -> argparse.ArgumentParser:
         "--verbose",
         action="store_true",
         help="print out file names while processing.",
+    )
+    parser.add_argument(
+        "--silent",
+        action="store_true",
+        help="continue on parse error.",
+    )
+    parser.add_argument(
+        "--tag-prefis",
+        type=str,
+        default="GH_DOCS",
+        help="Prefix used for the tags in the output.",
     )
     parser.add_argument(
         "--output-mode",

@@ -32,8 +32,7 @@ class GithubActions:
         # find action type
         self.action_type = self._find_action_type()
 
-    @property
-    def parsed_yaml(self) -> dict:
+    def parse(self) -> dict:
         """validates and parses action file to extract the relevant information"""
 
         result = {}
