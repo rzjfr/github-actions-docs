@@ -17,7 +17,7 @@ from github_actions_docs.errors import (
     GithubActionsDocsError,
     GithubActionsDocsSchemaError,
 )
-from github_actions_docs.parser import parse_yaml
+from github_actions_docs.parser import GithubActions
 
 __version__ = metadata("github-actions-docs")["Version"]
 logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
@@ -45,17 +45,18 @@ def generate_docs(
     changed_files = []
     for path in file_paths:
         logging.debug(f"evaluating: {path}")
-
-        yaml_path = pathlib.Path(path)
         try:
-            parsed_yaml = parse_yaml(yaml_path)
+            github_actions = GithubActions(path)
+            parsed_yaml = github_actions.parsed_yaml
         except (GithubActionsDocsError, GithubActionsDocsSchemaError) as e:
             logging.debug(f"ignoring invalid file: {path}\n  reason: {e}")
             continue  # it's not a valid github action or reusable workflow file
 
-        action_path = f"/{yaml_path.parent}"
+        action_path = f"/{github_actions.yaml_path.parent}"
         action_filename = (
-            f"/{yaml_path.name}" if parsed_yaml["runs"] == "reusable workflow" else ""
+            f"/{github_actions.yaml_path.name}"
+            if parsed_yaml["runs"] == "reusable workflow"
+            else ""
         )
         action_type = parsed_yaml["runs"]
         action_name = parsed_yaml["name"]
@@ -70,7 +71,7 @@ def generate_docs(
         docs_items = update_style(parsed_yaml)
         changed_file = create_or_update_docs_file(
             docs_items,
-            yaml_path,
+            github_actions.yaml_path,
             docs_filename,
             output_mode,
             action_type,
@@ -78,7 +79,7 @@ def generate_docs(
         )
         changed_files.append(changed_file)
         if changed_file:
-            logging.error(f"changed file: {yaml_path}")
+            logging.error(f"changed file: {github_actions.yaml_path}")
     logging.debug(f"number of changed files: {sum(changed_files)}/{len(file_paths)}")
     return 1 if any(changed_files) else 0
 
