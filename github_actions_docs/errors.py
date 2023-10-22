@@ -10,6 +10,5 @@ class GithubActionsDocsSchemaError(GithubActionsDocsError):
     """Schema errors"""
 
     def __init__(self, required_fields, field):
-        message = f"{required_fields} are required inside {field}.\n\
-https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions"
+        message = f"{required_fields} are required inside {field}.\n"
         super().__init__(message)

@@ -1,6 +1,6 @@
 import re
 
-from github_actions_docs.git import get_current_branch, get_latest_tag, get_remote_url
+from github_actions_docs.git import Git
 
 
 def generate_usage(
@@ -27,8 +27,9 @@ def generate_usage(
     Returns:
         yaml in form of string can be used directly in the output file.
     """
-    if remote_url := get_remote_url():
-        ref = uses_ref_override or get_latest_tag() or get_current_branch()
+    git = Git()
+    if remote_url := git.remote_url:
+        ref = uses_ref_override or git.latest_tag or git.current_branch
         uses_result = f"{remote_url}{action_path}{action_filename}@{ref}"
     else:
         uses_result = f"./.github/{action_path}{action_filename}"
