@@ -19,7 +19,8 @@ jobs:
     with:
       config-path: ""
       logLevel: "warning"
-      print_tags: 
+      print_tags: ""
+      show_tags: "false"
       tags: ""
       environment: ""
 ```
@@ -34,7 +35,8 @@ jobs:
 | ----------- | -------------------------------- | ----------- | -------- | --------- |
 | config-path |                                  | string      | false    | ""        |
 | logLevel    | Log level                        | choice      | true     | "warning" |
-| print_tags  | True to print to STDOUT          | boolean     | true     |           |
+| print_tags  | True to print to STDOUT          | boolean     | true     | ""        |
+| show_tags   | True to print to STDOUT          | boolean     | true     | "false"   |
 | tags        | Test scenario tags               | string      | true     | ""        |
 | environment | Environment to run tests against | environment | true     | ""        |
 
@@ -60,7 +62,8 @@ Suspendisse sit amet ipsum interdum, blandit augue et, condimentum dolor.
 | ----------- | -------------------------------- | ----------- | -------- | --------- |
 | config-path |                                  | string      | false    | ""        |
 | logLevel    | Log level                        | choice      | true     | "warning" |
-| print_tags  | True to print to STDOUT          | boolean     | true     |           |
+| print_tags  | True to print to STDOUT          | boolean     | true     | ""        |
+| show_tags   | True to print to STDOUT          | boolean     | true     | "false"   |
 | tags        | Test scenario tags               | string      | true     | ""        |
 | environment | Environment to run tests against | environment | true     | ""        |
 
@@ -72,7 +75,7 @@ Suspendisse sit amet ipsum interdum, blandit augue et, condimentum dolor.
 
 | parameter | description | required |
 | --------- | ----------- | -------- |
-| envPAT    |             | True     |
+| envPAT    |             | true     |
 
 <!-- END_GH_DOCS_SECRETS_VALID_WORKFLOW_TEST_2 -->
 
@@ -98,7 +101,8 @@ jobs:
     with:
       config-path: ""
       logLevel: "warning"
-      print_tags: 
+      print_tags: ""
+      show_tags: "false"
       tags: ""
       environment: ""
 ```
