@@ -22,6 +22,8 @@ def main():
         output_mode=args.output_mode,
         docs_filename=args.docs_filename,
         uses_ref_override=args.uses_ref_override,
+        tag_prefix=args.tag_prefix,
+        ignore=args.ignore,
     )
     sys.exit(exit_code)
 

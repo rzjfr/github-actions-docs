@@ -18,6 +18,7 @@ def generate_docs(
     docs_filename: str = "README.md",
     uses_ref_override: str = "",
     tag_prefix: str = "GH_DOCS",
+    ignore: bool = False,
 ) -> int:
     """
     Args:
@@ -30,6 +31,8 @@ def generate_docs(
             branch name.
         tag_prefix: sections are designated by comments in markdown file. This
             parameter controls the prefix of those comments.
+        ignore: continue if any one of the input file is not a valid github
+            action or workflow.
 
     Returns:
         exit code, 1 if any of input files has been changed, 0 if no change.
@@ -42,6 +45,9 @@ def generate_docs(
             parsed_yaml = github_actions.parse()
             action_type = parsed_yaml["runs"]
         except (GithubActionsDocsError, GithubActionsDocsSchemaError, KeyError) as e:
+            if not ignore:
+                logging.error(f"ignoring invalid file: {path}\n  reason: {e}")
+                return 1
             logging.debug(f"ignoring invalid file: {path}\n  reason: {e}")
             continue  # it's not a valid github action or reusable workflow file
 

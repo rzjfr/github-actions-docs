@@ -22,12 +22,12 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
         help="print out file names while processing.",
     )
     parser.add_argument(
-        "--silent",
+        "--ignore",
         action="store_true",
-        help="continue on parse error.",
+        help="ignore if the input is not a valid github action or workflow.",
     )
     parser.add_argument(
-        "--tag-prefis",
+        "--tag-prefix",
         type=str,
         default="GH_DOCS",
         help="Prefix used for the tags in the output.",
