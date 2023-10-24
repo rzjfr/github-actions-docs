@@ -22,7 +22,7 @@
 
 | parameter     | description | type    | required | default |
 | ------------- | ----------- | ------- | -------- | ------- |
-| boolean_value |             | boolean | false    | true    |
+| boolean_value |             | boolean | false    | "true"  |
 
 <!-- END_GH_DOCS_INPUTS_VALID_WORKFLOW_TEST_1 -->
 
@@ -51,7 +51,7 @@ jobs:
   call-workflow:
     uses: rzjfr/github-actions-docs/tests/input_files/valid_workflow_1.yaml@main
     with:
-      boolean_value: true
+      boolean_value: "true"
 ```
 
 <!-- END_GH_DOCS_USAGE_VALID_WORKFLOW_TEST_1 -->
@@ -72,7 +72,8 @@ jobs:
 | ----------- | -------------------------------- | ----------- | -------- | --------- |
 | config-path |                                  | string      | false    | ""        |
 | logLevel    | Log level                        | choice      | true     | "warning" |
-| print_tags  | True to print to STDOUT          | boolean     | true     |           |
+| print_tags  | True to print to STDOUT          | boolean     | true     | ""        |
+| show_tags   | True to print to STDOUT          | boolean     | true     | "false"   |
 | tags        | Test scenario tags               | string      | true     | ""        |
 | environment | Environment to run tests against | environment | true     | ""        |
 
@@ -84,7 +85,7 @@ jobs:
 
 | parameter | description | required |
 | --------- | ----------- | -------- |
-| envPAT    |             | True     |
+| envPAT    |             | true     |
 
 <!-- END_GH_DOCS_SECRETS_VALID_WORKFLOW_TEST_2 -->
 
@@ -110,7 +111,8 @@ jobs:
     with:
       config-path: ""
       logLevel: "warning"
-      print_tags: 
+      print_tags: ""
+      show_tags: "false"
       tags: ""
       environment: ""
 ```

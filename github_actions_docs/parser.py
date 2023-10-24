@@ -50,7 +50,6 @@ class GithubActions:
         return result
 
     def _find_action_type(self) -> str:
-        """ """
         yaml_content_keys = set(self.yaml_content.keys())
         if "on" in yaml_content_keys and (
             "workflow_call" in self.yaml_content["on"].keys()
@@ -116,10 +115,9 @@ class GithubActions:
         )
         for item in inputs.keys():
             item_type = f"{inputs[item].get('type', 'string')}"
+            item_default = f"\"{inputs[item].get('default', '')}\""
             if item_type == "boolean":
-                item_default = f"{inputs[item].get('default', '')}".lower()
-            else:
-                item_default = f"\"{inputs[item].get('default', '')}\""
+                item_default = item_default.lower()
             inputs_content.append(
                 [
                     item,
@@ -142,7 +140,7 @@ class GithubActions:
                 [
                     item,
                     secrets[item].get("description", "").replace("\n", ""),
-                    f"{secrets[item].get('required', True)}",
+                    f"{secrets[item].get('required', True)}".lower(),
                 ]
             )
         result["secrets"] = {

@@ -20,7 +20,7 @@ def generate_docs(
     tag_prefix: str = "GH_DOCS",
 ) -> int:
     """
-    Params:
+    Args:
         file_paths: list of files requires to be evaluated
         output_mode: inject to the existing docs_filename or create new based on the
             DOCS_TEMPLATE_ACTION
@@ -28,6 +28,8 @@ def generate_docs(
             input file.
         uses_ref_override: If empty tries to use the latest git tag and then
             branch name.
+        tag_prefix: sections are designated by comments in markdown file. This
+            parameter controls the prefix of those comments.
 
     Returns:
         exit code, 1 if any of input files has been changed, 0 if no change.

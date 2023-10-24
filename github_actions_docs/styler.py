@@ -7,7 +7,6 @@ class UpdateDocsStyle:
     def __init__(
         self, parsed_yaml: dict, yaml_path: str, uses_ref_override: str = ""
     ) -> None:
-        """"""
         self.action_path = f"/{yaml_path.parent}"
         self.action_filename = (
             f"/{yaml_path.name}" if parsed_yaml["runs"] == "reusable workflow" else ""
@@ -27,7 +26,7 @@ class UpdateDocsStyle:
         it would be in `./.github/<actions|workflows>/{filename}` format.
         [(docs)](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses)
 
-        Params:
+        Args:
             inputs: github actions inputs.
             uses_ref_override: overrides the ref section of `uses` section of if set.
             action_path: path of the github actions.
@@ -58,6 +57,7 @@ class UpdateDocsStyle:
         self.docs["usage"] = result
 
     def _update_table_style(self, key: str) -> None:
+        """Replaces section designated by `key` to be markdown tables."""
         if self.docs.get(key) and self.docs[key]["content"]:
             table = create_table(
                 self.docs[key]["header"],
@@ -68,15 +68,14 @@ class UpdateDocsStyle:
             self.docs[key] = f"\n\nThis item does not have any {key}.\n\n"
 
     def _update_docs_style(self) -> None:
+        """Replaces raw values with the processes ones."""
         for item in ["inputs", "outputs", "secrets"]:
             self._update_table_style(item)
         self.docs["runs"] = f"`{self.docs['runs']}`"
         self.docs["description"] = f"\n\n{self.docs['description'].strip()}\n\n"
         self.docs["usage"] = f"\n\n```yaml\n{self.docs['usage']}```\n\n"
-        if self.docs.get("default"):
-            self.docs["default"] = self.docs["default"].lower
-            if self.docs.get("type"):
-                self.docs["default"] = self.docs["default"].strip("'\"")
+        if default := self.docs.get("default"):
+            self.docs["default"] = default.lower
         if table_item := self.docs.get("contents_table_item"):
             sanitized = re.sub(r"[^a-z\d\s]", "", table_item.lower()).replace(" ", "-")
             self.docs["contents_table_item"] = f"- [{table_item}](#{sanitized})\n"
