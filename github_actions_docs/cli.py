@@ -19,12 +19,12 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="print out file names while processing.",
+        help="More verbosity in logging.",
     )
     parser.add_argument(
         "--ignore",
         action="store_true",
-        help="ignore if the input is not a valid github action or workflow.",
+        help="Continue on inputs file not being a valid github action or workflow.",
     )
     parser.add_argument(
         "--tag-prefix",
@@ -37,13 +37,13 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
         nargs="?",
         choices=["replace", "inject"],
         default="inject",
-        help="output to file method",
+        help="Method of output to file.",
     )
     parser.add_argument(
         "--docs-filename",
         type=str,
         default="README.md",
-        help="creates or updates output on the same path as the input.",
+        help="Creates or updates output on the same path as the input.",
     )
     parser.add_argument(
         "--uses-ref-override",
@@ -56,6 +56,6 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
         "input_files_path",
         nargs="+",
         type=str,
-        help="Path of a github reusable workflow or composite action file.",
+        help="Path of github action or reusable workflow file(s).",
     )
     return parser

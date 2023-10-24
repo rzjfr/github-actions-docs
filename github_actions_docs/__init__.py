@@ -12,7 +12,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
 def main():
     """main"""
-    description = metadata("github-actions-docs")["Description"]
+    description = metadata("github-actions-docs")["Summary"]
     version = "%(prog)s {}".format(__version__)
     args = build_args_parser(description=description, version=version).parse_args()
     if args.verbose:

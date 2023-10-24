@@ -16,14 +16,20 @@ Options:
 
 ```bash
 github-actions-docs --help
+#positional arguments:
+#  input_files_path      Path of a github action or reusable workflow file(s).
+#
 #options:
 #  -h, --help            show this help message and exit
 #  --version             show program's version number and exit
-#  --verbose             print out file names while processing. (default: False)
+#  --verbose             More verbosity in logging. (default: False)
+#  --ignore              Continue on inputs file not being a valid github action or workflow. (default: False)
+#  --tag-prefix TAG_PREFIX
+#                        Prefix used for the tags in the output. (default: GH_DOCS)
 #  --output-mode [{replace,inject}]
-#                        output to file method (default: inject)
+#                        Method of output to file. (default: inject)
 #  --docs-filename DOCS_FILENAME
-#                        creates or updates output on the same path as the input. (default: README.md)
+#                        Creates or updates output on the same path as the input. (default: README.md)
 #  --uses-ref-override USES_REF_OVERRIDE
 #                        Override the uses reference in usage section. By default latest tag or current branch name will be used. (default: )
 ```
