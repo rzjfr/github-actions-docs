@@ -1,4 +1,4 @@
-<img src="./docs/img/header.svg" width="100%" height="100">
+<img src="./docs/img/header.svg" width="100%" height="60">
 
 # github-actions-docs
 
