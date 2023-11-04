@@ -1,6 +1,6 @@
 import re
 
-from github_actions_docs.git import Git
+from github_actions_docs.lib.git import Git
 
 
 class UpdateDocsStyle:

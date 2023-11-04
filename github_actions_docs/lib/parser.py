@@ -1,8 +1,6 @@
 import pathlib
 
-from ruamel.yaml import YAML
-
-from github_actions_docs.configs import (
+from github_actions_docs.config import (
     GH_DOCS_WORKFLOWS_TABLE_OF_CONTENT_TITLE,
     GH_DOCS_WORKFLOWS_TITLE,
     GHA_ACTION_REQUIRED_FIELDS,
@@ -12,6 +10,7 @@ from github_actions_docs.errors import (
     GithubActionsDocsError,
     GithubActionsDocsSchemaError,
 )
+from ruamel.yaml import YAML
 
 
 class GithubActions:

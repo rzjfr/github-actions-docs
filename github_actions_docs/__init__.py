@@ -4,7 +4,7 @@ import sys
 from importlib_metadata import metadata
 
 from github_actions_docs.cli import build_args_parser
-from github_actions_docs.generator import generate_docs
+from github_actions_docs.lib.generator import generate_docs
 
 __version__ = metadata("github-actions-docs")["Version"]
 logging.basicConfig(stream=sys.stdout, level=logging.WARNING)

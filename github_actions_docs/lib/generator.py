@@ -1,15 +1,13 @@
 import logging
 import re
 
-from github_actions_docs.configs import DOCS_TEMPLATES
+from github_actions_docs.config import DOCS_TEMPLATES
 from github_actions_docs.errors import (
     GithubActionsDocsError,
     GithubActionsDocsSchemaError,
 )
-from github_actions_docs.parser import GithubActions
-from github_actions_docs.styler import UpdateDocsStyle
-
-logger = logging.getLogger(__name__)
+from github_actions_docs.lib.parser import GithubActions
+from github_actions_docs.lib.styler import UpdateDocsStyle
 
 
 def generate_docs(
