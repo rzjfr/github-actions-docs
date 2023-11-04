@@ -1,6 +1,8 @@
 # github-actions-docs
 
-Generate documentations for github actions and reusable workflows. For github
+[![Build Status](https://github.com/rzjfr/github-actions-docs/workflows/build/badge.svg)](https://github.com/rzjfr/github-actions-docs/actions) [![License](https://img.shields.io/github/license/rzjfr/github-actions-docs)](https://github.com/rzjfr/github-actions-docs/blob/master/LICENSE) [![Latest release](https://img.shields.io/github/v/release/rzjfr/github-actions-docs)](https://github.com/rzjfr/github-actions-docs/releases)
+
+Generates documentations for github actions and reusable workflows. For github
 actions by default the readme file would be in the same directory as the
 `action.yaml`. For reusable workflows as they all should be under
 `.github/workflows`, a single readme file will be created or the existing one
