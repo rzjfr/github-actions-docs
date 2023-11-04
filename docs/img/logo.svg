@@ -40,28 +40,16 @@
      inkscape:window-height="1009"
      id="namedview10"
      showgrid="false"
-     inkscape:zoom="1.1125147"
-     inkscape:cx="215.94446"
-     inkscape:cy="-2.5268868"
+     inkscape:zoom="1.5733334"
+     inkscape:cx="321.54852"
+     inkscape:cy="-42.700339"
      inkscape:window-x="0"
      inkscape:window-y="34"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg8" />
-  <path
-     d="M 0,0 H 191.95709 V 73.87396 H 0 Z"
-     id="path2"
-     inkscape:connector-curvature="0"
-     style="fill:#c1272d;stroke-width:0.1537348" />
-  <path
-     d="M 0,0 H 191.95709 V 49.24931 H 0 Z"
-     id="path4"
-     inkscape:connector-curvature="0"
-     style="fill:#006a44;stroke-width:0.1537348" />
-  <path
-     d="M 0,0 H 191.95709 V 24.62465 H 0 Z"
-     id="path6"
-     inkscape:connector-curvature="0"
-     style="fill:#fdb913;stroke-width:0.1537348" />
+     inkscape:current-layer="svg8"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-global="false" />
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
@@ -72,16 +60,31 @@
        id="tspan16"
        x="699.15253"
        y="78.756111" /></text>
+  <path
+     d="M 0,15.680627 H 191.95709 V 60.790922 H 0 Z"
+     id="path2"
+     inkscape:connector-curvature="0"
+     style="fill:#c1272d;stroke-width:0.12013356" />
+  <path
+     d="M 0,23.199008 H 191.95709 V 53.27254 H 0 Z"
+     id="path4"
+     inkscape:connector-curvature="0"
+     style="fill:#006a44;stroke-width:0.12013356" />
+  <path
+     d="M 0,30.717393 H 191.95709 V 45.754156 H 0 Z"
+     id="path6"
+     inkscape:connector-curvature="0"
+     style="fill:#fdb913;stroke-width:0.12013356" />
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:46.94620514px;line-height:1.25;font-family:serif;-inkscape-font-specification:serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.17365515"
-     x="240.93915"
-     y="49.024689"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:46.94620514px;line-height:1.25;font-family:serif;-inkscape-font-specification:serif;letter-spacing:0px;word-spacing:0px;fill:#333333;fill-opacity:1;stroke:#fdb913;stroke-width:0.074;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
+     x="236.46335"
+     y="50.080044"
      id="text22"
      transform="scale(0.852039,1.1736552)"><tspan
        sodipodi:role="line"
        id="tspan20"
-       x="240.93915"
-       y="49.024689"
-       style="font-weight:bold;fill:#333333;stroke:#f9f9f9;stroke-width:1.17365515">Github-Actions-Docs</tspan></text>
+       x="236.46335"
+       y="50.080044"
+       style="font-weight:bold;fill:#333333;stroke:#fdb913;stroke-width:0.074;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;">Github-Actions-Docs</tspan></text>
 </svg>
