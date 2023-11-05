@@ -61,7 +61,9 @@ def generate_docs(
         )
         changed_files.append(changed_file)
         if changed_file:
-            logging.error(f"changed file: {github_actions.yaml_path}")
+            logging.info(f"changed file: {github_actions.yaml_path}")
+        else:
+            logging.info(f"no change: {github_actions.yaml_path}")
     logging.debug(f"number of changed files: {sum(changed_files)}/{len(file_paths)}")
     return 1 if any(changed_files) else 0
 

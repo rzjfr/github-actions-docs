@@ -20,7 +20,7 @@ class GithubActions:
         if not self.yaml_path.is_file():
             raise GithubActionsDocsError(f"file {yaml_path} does not exist")
         if self.yaml_path.suffix not in [".yaml", ".yml"]:
-            raise GithubActionsDocsError(f"{yaml_path.suffix} is not a valid suffix.")
+            raise GithubActionsDocsError(f"{self.yaml_path.suffix} not accepted.")
         # load content
         with open(yaml_path, "r") as f:
             yaml = YAML(typ="unsafe", pure=True)
