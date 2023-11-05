@@ -23,10 +23,10 @@ class GithubActions:
             raise GithubActionsDocsError(f"{self.yaml_path.suffix} not accepted.")
         # load content
         with open(yaml_path, "r") as f:
-            yaml = YAML(typ="unsafe", pure=True)
+            yaml = YAML(pure=True)
             self.yaml_content = yaml.load(f)
         # validate content
-        if not type(self.yaml_content) == dict:
+        if not self.yaml_content:
             raise GithubActionsDocsError("file doesn't seem to be a valid yaml file.")
         # find action type
         self.action_type = self._find_action_type()
@@ -69,15 +69,18 @@ class GithubActions:
     def _parse_action(self) -> dict:
         result = {}
         inputs, inputs_content = self.yaml_content.get("inputs", {}), []
-        for item in inputs.keys():
-            if "description" not in inputs[item].keys():
+        for item, value in inputs.items():
+            if "description" not in value.keys():
                 raise GithubActionsDocsSchemaError(["description"], f".inputs.{item}")
+            comment = ""
+            if all_comments := value.ca.items.get("description"):
+                comment = " ".join([i.value for i in all_comments if i])
             inputs_content.append(
                 [
                     item,
-                    inputs[item]["description"].replace("\n", ""),
-                    f"{inputs[item].get('required', True)}".lower(),
-                    f"\"{inputs[item].get('default', '')}\"".lower(),
+                    f"{value['description']}{comment}".replace("\n", "").strip(),
+                    f"{value.get('required', True)}".lower(),
+                    f"\"{value.get('default', '')}\"".lower(),
                 ]
             )
         result["inputs"] = {
@@ -86,13 +89,13 @@ class GithubActions:
         }
 
         outputs, output_content = self.yaml_content.get("outputs", {}), []
-        for item in outputs.keys():
-            if "description" not in outputs[item].keys():
+        for item, value in outputs.items():
+            if "description" not in value.keys():
                 raise GithubActionsDocsSchemaError(["description"], f".outputs.{item}")
             output_content.append(
                 [
                     item,
-                    outputs[item]["description"].replace("\n", ""),
+                    value["description"].replace("\n", ""),
                 ]
             )
         result["outputs"] = {
@@ -112,17 +115,20 @@ class GithubActions:
             self.yaml_content["on"]["workflow_call"].get("inputs", {}),
             [],
         )
-        for item in inputs.keys():
-            item_type = f"{inputs[item].get('type', 'string')}"
-            item_default = f"\"{inputs[item].get('default', '')}\""
+        for item, value in inputs.items():
+            description = value.get("description", "")
+            if all_comments := value.ca.items.get("description"):
+                description += " ".join([i.value for i in all_comments if i])
+            item_type = f"{value.get('type', 'string')}"
+            item_default = f"\"{value.get('default', '')}\""
             if item_type == "boolean":
                 item_default = item_default.lower()
             inputs_content.append(
                 [
                     item,
-                    inputs[item].get("description", "").replace("\n", ""),
+                    description.replace("\n", "").strip(),
                     item_type,
-                    f"{inputs[item].get('required', True)}".lower(),
+                    f"{value.get('required', True)}".lower(),
                     item_default,
                 ]
             )
@@ -134,12 +140,12 @@ class GithubActions:
             self.yaml_content["on"]["workflow_call"].get("secrets", {}),
             [],
         )
-        for item in secrets.keys():
+        for item, value in secrets.items():
             secrets_content.append(
                 [
                     item,
-                    secrets[item].get("description", "").replace("\n", ""),
-                    f"{secrets[item].get('required', True)}".lower(),
+                    value.get("description", "").replace("\n", ""),
+                    f"{value.get('required', True)}".lower(),
                 ]
             )
         result["secrets"] = {
@@ -150,11 +156,11 @@ class GithubActions:
             self.yaml_content["on"]["workflow_call"].get("outputs", {}),
             [],
         )
-        for item in outputs.keys():
+        for item, value in outputs.items():
             output_content.append(
                 [
                     item,
-                    outputs[item].get("description", "").replace("\n", ""),
+                    value.get("description", "").replace("\n", ""),
                 ]
             )
         result["outputs"] = {

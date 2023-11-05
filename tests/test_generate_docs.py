@@ -5,7 +5,7 @@ import shutil
 import unittest
 from glob import glob
 
-from github_actions_docs import generate_docs
+from github_actions_docs.lib.generator import generate_docs
 
 
 class TestGenerateDocs(unittest.TestCase):
@@ -22,11 +22,10 @@ class TestGenerateDocs(unittest.TestCase):
     def test_generated_docs_composite_no_readme(self):
         generate_docs(
             file_paths=["tests/input_files/valid_composite.yaml"],
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         path = pathlib.Path("tests/input_files/README.md")
         self.assertTrue(path.is_file())  # generated file exists
-
         comparison = filecmp.cmp(
             "tests/input_files/README.md",
             "tests/output_docs/COMPOSITE_README.md",
@@ -37,7 +36,7 @@ class TestGenerateDocs(unittest.TestCase):
         generate_docs(
             file_paths=["tests/input_files/valid_composite.yaml"],
             docs_filename="EXISTING_README.md",
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         path = pathlib.Path("tests/input_files/EXISTING_README.md")
         self.assertTrue(path.is_file())  # generated file exists
@@ -52,7 +51,7 @@ class TestGenerateDocs(unittest.TestCase):
         generate_docs(
             file_paths=["tests/input_files/valid_composite.yaml"],
             docs_filename="EXISTING_NO_TAGS_README.md",
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         path = pathlib.Path("tests/input_files/EXISTING_NO_TAGS_README.md")
         self.assertTrue(path.is_file())  # generated file exists
@@ -66,7 +65,7 @@ class TestGenerateDocs(unittest.TestCase):
     def test_generated_docs_workflow_no_readme(self):
         generate_docs(
             file_paths=["tests/input_files/valid_workflow_2.yaml"],
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         path = pathlib.Path("tests/input_files/README.md")
         self.assertTrue(path.is_file())  # generated file exists
@@ -79,15 +78,15 @@ class TestGenerateDocs(unittest.TestCase):
     def test_generated_docs_workflow_update_readme(self):
         generate_docs(
             file_paths=["tests/input_files/valid_workflow_1.yaml"],
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         generate_docs(
             file_paths=["tests/input_files/valid_workflow_2.yaml"],
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         generate_docs(
             file_paths=["tests/input_files/valid_workflow_1.yaml"],
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         path = pathlib.Path("tests/input_files/README.md")
         self.assertTrue(path.is_file())  # generated file exists
@@ -102,7 +101,7 @@ class TestGenerateDocs(unittest.TestCase):
         generate_docs(
             file_paths=["tests/input_files/valid_workflow_2.yaml"],
             docs_filename="EXISTING_README.md",
-            uses_ref_override="main",
+            usage_ref_override="main",
         )
         path = pathlib.Path("tests/input_files/EXISTING_README.md")
         self.assertTrue(path.is_file())  # generated file exists

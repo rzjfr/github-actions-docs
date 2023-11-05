@@ -22,7 +22,7 @@ jobs:
       print_tags: ""
       show_tags: "false"
       tags: ""
-      environment: ""
+      environment: production
 ```
 
 <!-- END_GH_DOCS_USAGE -->
@@ -104,7 +104,7 @@ jobs:
       print_tags: ""
       show_tags: "false"
       tags: ""
-      environment: ""
+      environment: production
 ```
 
 <!-- END_GH_DOCS_USAGE_VALID_WORKFLOW_TEST_2 -->
