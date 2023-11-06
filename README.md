@@ -33,7 +33,15 @@ of comment tags per item as it's in the default inline mode.
 pip install github-actions-docs
 ```
 
-Options:
+## Usage
+
+```bash
+github-actions-docs .github/actions/example/action.yaml --verbose
+# Creates or updates .github/actions/example/README.md
+github-actions-docs .github/actions/example/action.yaml --verbose --dry-run --show-diff
+# Does not save anything on the disk and shows the diff between what would have
+# been generated if and existing .github/actions/example/README.md
+```
 
 ```bash
 github-actions-docs --help
@@ -44,18 +52,14 @@ github-actions-docs --help
 #  -h, --help            show this help message and exit
 #  --version             show program's version number and exit
 #  --verbose             More verbosity in logging. (default: False)
-#  --ignore              Continue on inputs file not being a valid github action or workflow. (default: False)
-#  --tag-prefix TAG_PREFIX
-#                        Prefix used for the tags in the output. (default: GH_DOCS)
-#  --output-mode [{replace,inject}]
-#                        Method of output to file. (default: inject)
-#  --generation-mode [{inline,block}]
-#                        Whether to create tags inline (more flexibility but more noise). (default: inline)
-#  --docs-filename DOCS_FILENAME
-#                        Creates or updates output on the same path as the input. (default: README.md)
-#  --usage-ref-override USAGE_REF_OVERRIDE
-#                        Override the uses reference in usage section. By default latest tag or current branch name will be used. (default: )
-
+#  --dry-run             Show content of the generated docs instead of writing it. (default: False)
+#  --show-diff           Show diff between existing file and the newly generated one. (default: False)
+#  --ignore              Silently continue on invalid files. (default: False)
+#  --tag-prefix          Prefix used for the tags in the output. (default: GH_DOCS)
+#  --output-mode         Method of output to file. (default: inject) Possible values: [replace, inject]
+#  --generation-mode     Whether to create tags inline or only a pair of tags. (default: inline) Possible values: [inline, block]
+#  --docs-filename       Creates or updates output on the same path as the input. (default: README.md)
+#  --usage-ref-override  Override the uses reference in usage section. By default latest tag or current branch name will be used.
 ```
 
 ## As a pre-commit hook
@@ -71,19 +75,15 @@ Sample `.pre-commit-config.yaml`
     - id: generate-gh-actions-docs
 ```
 
-## Quick start
+## Inline generation mode
 
-Following command creates or updates `.github/actions/example/README.md`.
+If the output file (determined by `--docs-filename`) does not exist on the same
+path as the input file, it would be generated based on a default template. Otherwise
+it would check content of the existing file for the [tags](#full-list-of-tags) and
+tries to update them by putting the desired value in a `BEGIN` and `END` pair of tags
+with the same name.
 
-```bash
-github-actions-docs .github/actions/example/action.yaml --verbose
-```
-
-If the output file (determined by `--docs-filename`) does not exist, it would be
-created based on a default template. If not it would check content of the existing
-file for the [tags](#full-list-of-tags) and updates them.
-
-## Full list of tags (for inline generation mode)
+### Full list of tags (inline generation mode)
 
 | tag name                                | corresponding yaml path                                                       | description                                                                   | type               |
 | --------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------ |

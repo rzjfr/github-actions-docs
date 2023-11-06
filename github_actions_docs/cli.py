@@ -24,12 +24,17 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Don't write anything to the destination files",
+        help="Show content of the generated docs instead of writing it.",
+    )
+    parser.add_argument(
+        "--show-diff",
+        action="store_true",
+        help="Show diff between existing file and the newly generated one.",
     )
     parser.add_argument(
         "--ignore",
         action="store_true",
-        help="Continue on inputs file not being a valid github action or workflow.",
+        help="Silently continue on invalid files.",
     )
     parser.add_argument(
         "--tag-prefix",
