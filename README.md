@@ -27,11 +27,26 @@ pip install github-actions-docs
 ## Usage
 
 ```bash
-github-actions-docs .github/actions/example/action.yaml --verbose
+github-actions-docs .github/actions/example/action.yaml
 # Creates or updates .github/actions/example/README.md
 github-actions-docs .github/actions/example/action.yaml --verbose --dry-run --show-diff
 # Does not save anything on the disk and shows the diff between what would have
 # been generated if and existing .github/actions/example/README.md
+github-actions-docs .github/workflows/reusable_workflow_1.yaml
+# Creates or updates .github/workflows/README.md
+```
+
+### As a pre-commit hook
+
+Check [pre-commit](https://github.com/pre-commit/pre-commit) for further information.
+
+Sample `.pre-commit-config.yaml`
+
+```yaml
+- repo: https://github.com/rzjfr/github-actions-docs
+  rev: 0.2.3
+  hooks:
+    - id: generate-gh-actions-docs
 ```
 
 ### Options
@@ -47,25 +62,12 @@ github-actions-docs --help
 #  --verbose             More verbosity in logging. (default: False)
 #  --dry-run             Show content of the generated docs instead of writing it. (default: False)
 #  --show-diff           Show diff between existing file and the newly generated one. (default: False)
-#  --ignore              Silently continue on invalid files. (default: False)
+#  --ignore              Silently ignore invalid files. (default: False)
 #  --tag-prefix          Prefix used for the tags in the output. (default: GH_DOCS)
 #  --output-mode         Method of output to file. (default: inject) Possible values: [replace, inject]
 #  --generation-mode     Whether to create tags inline or only a pair of tags. (default: inline) Possible values: [inline, block]
 #  --docs-filename       Creates or updates output on the same path as the input. (default: README.md)
 #  --usage-ref-override  Override the uses reference in usage section. By default latest tag or current branch name will be used.
-```
-
-### As a pre-commit hook
-
-Check [pre-commit](https://github.com/pre-commit/pre-commit) for further information.
-
-Sample `.pre-commit-config.yaml`
-
-```yaml
-- repo: https://github.com/rzjfr/github-actions-docs
-  rev: 0.2.3
-  hooks:
-    - id: generate-gh-actions-docs
 ```
 
 ## Generation mode

@@ -34,7 +34,7 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
     parser.add_argument(
         "--ignore",
         action="store_true",
-        help="Silently continue on invalid files.",
+        help="Silently ignore the invalid files.",
     )
     parser.add_argument(
         "--tag-prefix",
