@@ -14,7 +14,7 @@ def generate_docs(
     file_paths: list,
     output_mode: str = "inject",
     docs_filename: str = "README.md",
-    uses_ref_override: str = "",
+    usage_ref_override: str = "",
     tag_prefix: str = "GH_DOCS",
     ignore: bool = False,
 ) -> int:
@@ -25,7 +25,7 @@ def generate_docs(
             DOCS_TEMPLATE_ACTION
         docs_filename: name of the markdown file which will be created next to the
             input file.
-        uses_ref_override: If empty tries to use the latest git tag and then
+        usage_ref_override: If empty tries to use the latest git tag and then
             branch name.
         tag_prefix: sections are designated by comments in markdown file. This
             parameter controls the prefix of those comments.
@@ -49,7 +49,7 @@ def generate_docs(
             logging.debug(f"ignoring invalid file: {path}\n  reason: {e}")
             continue  # it's not a valid github action or reusable workflow file
 
-        UpdateDocsStyle(parsed_yaml, github_actions.yaml_path, uses_ref_override)
+        UpdateDocsStyle(parsed_yaml, github_actions.yaml_path, usage_ref_override)
 
         changed_file = create_or_update_docs_file(
             parsed_yaml,
@@ -61,7 +61,9 @@ def generate_docs(
         )
         changed_files.append(changed_file)
         if changed_file:
-            logging.error(f"changed file: {github_actions.yaml_path}")
+            logging.info(f"changed file: {github_actions.yaml_path}")
+        else:
+            logging.info(f"no change: {github_actions.yaml_path}")
     logging.debug(f"number of changed files: {sum(changed_files)}/{len(file_paths)}")
     return 1 if any(changed_files) else 0
 

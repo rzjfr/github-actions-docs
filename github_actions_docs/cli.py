@@ -22,6 +22,11 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
         help="More verbosity in logging.",
     )
     parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Don't write anything to the destination files",
+    )
+    parser.add_argument(
         "--ignore",
         action="store_true",
         help="Continue on inputs file not being a valid github action or workflow.",
@@ -40,13 +45,20 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
         help="Method of output to file.",
     )
     parser.add_argument(
+        "--generation-mode",
+        nargs="?",
+        choices=["inline", "block"],
+        default="inline",
+        help="Whether to create tags inline (more flexibility but more noise).",
+    )
+    parser.add_argument(
         "--docs-filename",
         type=str,
         default="README.md",
         help="Creates or updates output on the same path as the input.",
     )
     parser.add_argument(
-        "--uses-ref-override",
+        "--usage-ref-override",
         type=str,
         default="",
         help="Override the uses reference in usage section.\

@@ -7,7 +7,7 @@ description: |
 inputs:
   tristique:
     required: false
-    description: In pretium at libero in tempor.
+    description: In pretium at libero in tempor. # example: elit
   sollicitudin:
     default: "default_param"
     description: |-
@@ -21,7 +21,7 @@ inputs:
   pellentesque:
     required: false
     default: 'false'
-    description: Nam et malesuada metus, eu interdum ante.
+    description: Nam et malesuada metus, eu interdum ante. # interdum ante
 
 runs:
   using: composite

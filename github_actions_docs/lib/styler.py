@@ -5,8 +5,9 @@ from github_actions_docs.lib.git import Git
 
 class UpdateDocsStyle:
     def __init__(
-        self, parsed_yaml: dict, yaml_path: str, uses_ref_override: str = ""
+        self, parsed_yaml: dict, yaml_path: str, usage_ref_override: str = ""
     ) -> None:
+        self.git = Git()
         self.action_path = f"/{yaml_path.parent}"
         self.action_filename = (
             f"/{yaml_path.name}" if parsed_yaml["runs"] == "reusable workflow" else ""
@@ -15,10 +16,10 @@ class UpdateDocsStyle:
         self.action_type = parsed_yaml["runs"]
         self.inputs = parsed_yaml["inputs"]["content"]
         self.docs = parsed_yaml
-        self._update_docs_usage(uses_ref_override)
+        self.docs["usage"] = self._update_docs_usage(usage_ref_override)
         self._update_docs_style()
 
-    def _update_docs_usage(self, uses_ref_override: str = "") -> str:
+    def _update_docs_usage(self, usage_ref_override: str = "") -> str:
         """Generates usage section
         By default it tries to constuct the reference in following format:
         `{owner}/{repo}/.github/workflows/{filename}@{ref}`
@@ -26,18 +27,17 @@ class UpdateDocsStyle:
         it would be in `./.github/<actions|workflows>/{filename}` format.
         [(docs)](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses)
 
-        Args:
+        Params:
             inputs: github actions inputs.
-            uses_ref_override: overrides the ref section of `uses` section of if set.
+            usage_ref_override: overrides the ref section of `uses` section of if set.
             action_path: path of the github actions.
             action_filename: filename of the github actions.
 
         Returns:
             yaml in form of string can be used directly in the output file.
         """
-        git = Git()
-        if remote_url := git.remote_url:
-            ref = uses_ref_override or git.latest_tag or git.current_branch
+        if remote_url := self.git.remote_url:
+            ref = usage_ref_override or self.git.latest_tag or self.git.current_branch
             uses_result = f"{remote_url}{self.action_path}{self.action_filename}@{ref}"
         else:
             uses_result = f"./.github/{self.action_path}{self.action_filename}"
@@ -52,9 +52,15 @@ class UpdateDocsStyle:
         result += f"{' '*indentation}uses: {uses_result}\n"
         if self.inputs:
             result += f"{' '*indentation}with:\n"
-            for item in self.inputs:
-                result += f"{' '*(indentation+2)}{item[0]}: {item[-1]}\n"
-        self.docs["usage"] = result
+            for i, item in enumerate(self.inputs):
+                name, desc, default = item[0], item[1], item[-1]
+                if match := re.match(r"(.*)(\s*#\s*[eE]xample\:\s*)(.*)", desc):
+                    _, _, eg = match.groups()
+                    default = eg or default
+                # remove comment since we need comments only for this section
+                self.inputs[i][1] = re.sub(r"#.*", "", desc).strip()
+                result += f"{' '*(indentation+2)}{name}: {default}\n"
+        return result
 
     def _update_table_style(self, key: str) -> None:
         """Replaces section designated by `key` to be markdown tables."""

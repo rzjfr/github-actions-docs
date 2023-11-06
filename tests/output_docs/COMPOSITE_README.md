@@ -40,7 +40,7 @@ This item does not have any outputs.
 - name: Valid Test
   uses: rzjfr/github-actions-docs/tests/input_files@main
   with:
-    tristique: ""
+    tristique: elit
     sollicitudin: "default_param"
     mattis: ""
     pellentesque: "false"

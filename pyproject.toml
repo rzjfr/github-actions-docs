@@ -1,19 +1,26 @@
 [project]
 name = "github_actions_docs"
 description = "Generate github actions documentation in markdown format."
-version = "0.2.3"
+version = "0.3.0"
 readme = "README.md"
 requires-python = ">=3.10"
+authors = [
+    { name="Reza J. Bavaghoush", email="rzjfr@yahoo.com" },
+]
 classifiers = [
-    'Development Status :: 0 - Alfa',
+    "Development Status :: 2 - Pre-Alpha",
     'Environment :: Console',
     'Intended Audience :: Developers',
     'Operating System :: OS Independent',
+    "License :: OSI Approved :: MIT License",
     'Programming Language :: Python :: 3 :: Only',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
   'importlib-metadata>=6.8.0',
-  'ruamel.yaml>=0.17'
+  'ruamel.yaml<=0.18.0'
 ]
 
 [project.urls]
@@ -23,11 +30,11 @@ dependencies = [
 github-actions-docs = "github_actions_docs:main"
 
 [build-system]
-requires = ["setuptools>=61.0.0"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["github_actions_docs"]
-exclude = ["tests*"]
-namespaces = false
+exclude = ["tests*", "docs*"]
+
+[tool.wheel]
+exclude = ["tests*", "docs*"]
