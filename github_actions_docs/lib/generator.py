@@ -1,5 +1,8 @@
+import difflib
 import logging
+import pathlib
 import re
+import tempfile
 
 from github_actions_docs.config import DOCS_TEMPLATES
 from github_actions_docs.errors import (
@@ -8,6 +11,9 @@ from github_actions_docs.errors import (
 )
 from github_actions_docs.lib.parser import GithubActions
 from github_actions_docs.lib.styler import UpdateDocsStyle
+from pygments import highlight
+from pygments.formatters import Terminal256Formatter
+from pygments.lexers import DiffLexer, MarkdownLexer
 
 
 def generate_docs(
@@ -17,6 +23,9 @@ def generate_docs(
     usage_ref_override: str = "",
     tag_prefix: str = "GH_DOCS",
     ignore: bool = False,
+    dry_run: bool = False,
+    show_diff: bool = False,
+    generation_mode="inline",
 ) -> int:
     """
     Args:
@@ -29,12 +38,14 @@ def generate_docs(
             branch name.
         tag_prefix: sections are designated by comments in markdown file. This
             parameter controls the prefix of those comments.
-        ignore: continue if any one of the input file is not a valid github
-            action or workflow.
+        ignore: continue if any one of the input files are not a valid github
+            action or a workflow.
 
     Returns:
         exit code, 1 if any of input files has been changed, 0 if no change.
     """
+    if dry_run:
+        docs_path = pathlib.Path(tempfile.mkdtemp())
     changed_files = []
     for path in file_paths:
         logging.debug(f"evaluating: {path}")
@@ -51,17 +62,51 @@ def generate_docs(
 
         UpdateDocsStyle(parsed_yaml, github_actions.yaml_path, usage_ref_override)
 
+        # Setup output
+        existing_docs_path = github_actions.yaml_path.parent.joinpath(docs_filename)
+        existing_file_content = ""
+        if existing_docs_path.is_file():
+            with open(existing_docs_path, "r") as f:
+                existing_file_content = f.read()
+        if dry_run:
+            docs_path = docs_path.joinpath(f"{hash(path)}_{docs_filename}")
+            if existing_docs_path.is_file():
+                with open(docs_path, "w") as f:
+                    f.write(existing_file_content)
+        else:
+            docs_path = github_actions.yaml_path.parent.joinpath(docs_filename)
+        # Generate changed file
         changed_file = create_or_update_docs_file(
             parsed_yaml,
             github_actions.yaml_path,
             docs_filename,
             output_mode,
             action_type,
+            docs_path,
             tag_prefix,
         )
         changed_files.append(changed_file)
+        # Generate output
+        with open(docs_path, "r") as f:
+            new_file_content = f.read()
+        if dry_run:
+            if not show_diff:
+                print(new_file_content)
+                logging.info(f"file would have been written in: {existing_docs_path}")
+        if show_diff:
+            diff = "".join(
+                difflib.unified_diff(
+                    existing_file_content.splitlines(keepends=True),
+                    new_file_content.splitlines(keepends=True),
+                    n=10,
+                )
+            )
+            if not diff:
+                print("No changes to the existing file!")
+            else:
+                print(highlight(diff, DiffLexer(), Terminal256Formatter()))
         if changed_file:
-            logging.info(f"changed file: {github_actions.yaml_path}")
+            logging.info(f"changed for file: {github_actions.yaml_path}")
         else:
             logging.info(f"no change: {github_actions.yaml_path}")
     logging.debug(f"number of changed files: {sum(changed_files)}/{len(file_paths)}")
@@ -74,6 +119,7 @@ def create_or_update_docs_file(
     docs_filename: str,
     output_mode: str,
     action_type: str,
+    docs_path: pathlib.Path,
     tag_prefix: str = "GH_DOCS",
 ) -> bool:
     """
@@ -81,7 +127,6 @@ def create_or_update_docs_file(
         True if the file has been updated
     """
     file_changed = False
-    docs_path = yaml_path.parent.joinpath(docs_filename)
     if action_type not in DOCS_TEMPLATES:
         template = DOCS_TEMPLATES["generic"].format(prefix=tag_prefix)
     else:

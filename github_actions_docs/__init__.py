@@ -17,6 +17,7 @@ def main():
     args = build_args_parser(description=description, version=version).parse_args()
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
+        logging.getLogger().handlers = [logging.StreamHandler(sys.stderr)]
     elif args.ignore:
         logging.getLogger().setLevel(logging.WARNING)
     exit_code = generate_docs(
@@ -26,6 +27,9 @@ def main():
         usage_ref_override=args.usage_ref_override,
         tag_prefix=args.tag_prefix,
         ignore=args.ignore,
+        dry_run=args.dry_run,
+        show_diff=args.show_diff,
+        generation_mode=args.generation_mode,
     )
     sys.exit(exit_code)
 

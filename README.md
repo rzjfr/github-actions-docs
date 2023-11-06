@@ -2,24 +2,7 @@
 
 [![Build Status](https://github.com/rzjfr/github-actions-docs/workflows/build/badge.svg)](https://github.com/rzjfr/github-actions-docs/actions) [![License](https://img.shields.io/github/license/rzjfr/github-actions-docs)](https://github.com/rzjfr/github-actions-docs/blob/master/LICENSE) [![Latest release](https://img.shields.io/github/v/release/rzjfr/github-actions-docs)](https://github.com/rzjfr/github-actions-docs/releases)
 
-Generates documentations for github actions and reusable workflows. For github
-actions by default the readme file would be in the same directory as the
-`action.yaml`. It's possible to control the name of the generated file.
-
-For reusable workflows as they all should be under
-`.github/workflows`, one single readme file will be created or the existing one
-will be updated for every reusable workflows under that directory.
-
-In the `description` part of the inputs section if you comment your desired value
-in `# Example: <value>` format, `<value>` will be used to generate the `Usage`
-section, otherwise, it will try to fill the value of the parameter with default
-or it will be empty if none has been detected.
-
-By default the generated file will be generated and injected based on a predefined
-template. You can either change the template or modify the tags after generation
-to modify the format. If the tags are too much for you can change the `generation-mode`
-to be block mode in which only a pair of comment tags will be used instead of a pair
-of comment tags per item as it's in the default inline mode.
+Generates documentations for github actions and reusable workflows.
 
 ## Features
 
@@ -27,38 +10,33 @@ of comment tags per item as it's in the default inline mode.
 - Highly customizable usage section.
 - Inline tags for more flexibility.
 
+For reusable workflows as they all should be under `.github/workflows`, one single
+readme file will be generated for every reusable workflows under that directory.
+
+Commenting `# Example: <value>` format, In the `description` part of the inputs
+section will result in `<value>` being picked up as the default value of the
+respecting parameter in the usage section. Otherwise the value would be empty
+or equal to the `default:`.
+
 ## Installation
 
 ```bash
 pip install github-actions-docs
 ```
 
-Options:
+## Usage
 
 ```bash
-github-actions-docs --help
-#positional arguments:
-#  input_files_path      Path of a github action or reusable workflow file(s).
-#
-#options:
-#  -h, --help            show this help message and exit
-#  --version             show program's version number and exit
-#  --verbose             More verbosity in logging. (default: False)
-#  --ignore              Continue on inputs file not being a valid github action or workflow. (default: False)
-#  --tag-prefix TAG_PREFIX
-#                        Prefix used for the tags in the output. (default: GH_DOCS)
-#  --output-mode [{replace,inject}]
-#                        Method of output to file. (default: inject)
-#  --generation-mode [{inline,block}]
-#                        Whether to create tags inline (more flexibility but more noise). (default: inline)
-#  --docs-filename DOCS_FILENAME
-#                        Creates or updates output on the same path as the input. (default: README.md)
-#  --usage-ref-override USAGE_REF_OVERRIDE
-#                        Override the uses reference in usage section. By default latest tag or current branch name will be used. (default: )
-
+github-actions-docs .github/actions/example/action.yaml
+# Creates or updates .github/actions/example/README.md
+github-actions-docs .github/actions/example/action.yaml --verbose --dry-run --show-diff
+# Does not save anything on the disk and shows the diff between what would have
+# been generated if and existing .github/actions/example/README.md
+github-actions-docs .github/workflows/reusable_workflow_1.yaml
+# Creates or updates .github/workflows/README.md
 ```
 
-## As a pre-commit hook
+### As a pre-commit hook
 
 Check [pre-commit](https://github.com/pre-commit/pre-commit) for further information.
 
@@ -71,19 +49,39 @@ Sample `.pre-commit-config.yaml`
     - id: generate-gh-actions-docs
 ```
 
-## Quick start
-
-Following command creates or updates `.github/actions/example/README.md`.
+### Options
 
 ```bash
-github-actions-docs .github/actions/example/action.yaml --verbose
+github-actions-docs --help
+#positional arguments:
+#  input_files_path      Path of a github action or reusable workflow file(s).
+#
+#options:
+#  -h, --help            show this help message and exit
+#  --version             show program's version number and exit
+#  --verbose             More verbosity in logging. (default: False)
+#  --dry-run             Show content of the generated docs instead of writing it. (default: False)
+#  --show-diff           Show diff between existing file and the newly generated one. (default: False)
+#  --ignore              Silently ignore invalid files. (default: False)
+#  --tag-prefix          Prefix used for the tags in the output. (default: GH_DOCS)
+#  --output-mode         Method of output to file. (default: inject) Possible values: [replace, inject]
+#  --generation-mode     Whether to create tags inline or only a pair of tags. (default: inline) Possible values: [inline, block]
+#  --docs-filename       Creates or updates output on the same path as the input. (default: README.md)
+#  --usage-ref-override  Override the uses reference in usage section. By default latest tag or current branch name will be used.
 ```
 
-If the output file (determined by `--docs-filename`) does not exist, it would be
-created based on a default template. If not it would check content of the existing
-file for the [tags](#full-list-of-tags) and updates them.
+## Generation mode
 
-## Full list of tags (for inline generation mode)
+A markdown file will be generated and injected based on a predefined template. You
+can create your own template by adding [tags](#full-list-of-tags) directly to your
+readme file. Each tag will be replaced by a pair of `BEGIN` and `END` tags enclosing
+the corresponding content. That's the inline mode.
+
+If the comment tags are too noisy, you can change the `generation-mode` to the block
+mode in which only a pair of comment tags will be used to designate the entire
+generated section.
+
+### Full list of tags
 
 | tag name                                | corresponding yaml path                                                       | description                                                                   | type               |
 | --------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------ |
