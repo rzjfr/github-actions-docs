@@ -2,30 +2,21 @@
 
 [![Build Status](https://github.com/rzjfr/github-actions-docs/workflows/build/badge.svg)](https://github.com/rzjfr/github-actions-docs/actions) [![License](https://img.shields.io/github/license/rzjfr/github-actions-docs)](https://github.com/rzjfr/github-actions-docs/blob/master/LICENSE) [![Latest release](https://img.shields.io/github/v/release/rzjfr/github-actions-docs)](https://github.com/rzjfr/github-actions-docs/releases)
 
-Generates documentations for github actions and reusable workflows. For github
-actions by default the readme file would be in the same directory as the
-`action.yaml`. It's possible to control the name of the generated file.
-
-For reusable workflows as they all should be under
-`.github/workflows`, one single readme file will be created or the existing one
-will be updated for every reusable workflows under that directory.
-
-In the `description` part of the inputs section if you comment your desired value
-in `# Example: <value>` format, `<value>` will be used to generate the `Usage`
-section, otherwise, it will try to fill the value of the parameter with default
-or it will be empty if none has been detected.
-
-By default the generated file will be generated and injected based on a predefined
-template. You can either change the template or modify the tags after generation
-to modify the format. If the tags are too much for you can change the `generation-mode`
-to be block mode in which only a pair of comment tags will be used instead of a pair
-of comment tags per item as it's in the default inline mode.
+Generates documentations for github actions and reusable workflows.
 
 ## Features
 
 - Supports reusable workflows.
 - Highly customizable usage section.
 - Inline tags for more flexibility.
+
+For reusable workflows as they all should be under `.github/workflows`, one single
+readme file will be generated for every reusable workflows under that directory.
+
+Commenting `# Example: <value>` format, In the `description` part of the inputs
+section will result in `<value>` being picked up as the default value of the
+respecting parameter in the usage section. Otherwise the value would be empty
+or equal to the `default:`.
 
 ## Installation
 
@@ -42,6 +33,8 @@ github-actions-docs .github/actions/example/action.yaml --verbose --dry-run --sh
 # Does not save anything on the disk and shows the diff between what would have
 # been generated if and existing .github/actions/example/README.md
 ```
+
+### Options
 
 ```bash
 github-actions-docs --help
@@ -62,7 +55,7 @@ github-actions-docs --help
 #  --usage-ref-override  Override the uses reference in usage section. By default latest tag or current branch name will be used.
 ```
 
-## As a pre-commit hook
+### As a pre-commit hook
 
 Check [pre-commit](https://github.com/pre-commit/pre-commit) for further information.
 
@@ -75,15 +68,18 @@ Sample `.pre-commit-config.yaml`
     - id: generate-gh-actions-docs
 ```
 
-## Inline generation mode
+## Generation mode
 
-If the output file (determined by `--docs-filename`) does not exist on the same
-path as the input file, it would be generated based on a default template. Otherwise
-it would check content of the existing file for the [tags](#full-list-of-tags) and
-tries to update them by putting the desired value in a `BEGIN` and `END` pair of tags
-with the same name.
+A markdown file will be generated and injected based on a predefined template. You
+can create your own template by adding [tags](#full-list-of-tags) directly to your
+readme file. Each tag will be replaced by a pair of `BEGIN` and `END` tags enclosing
+the corresponding content. That's the inline mode.
 
-### Full list of tags (inline generation mode)
+If the comment tags are too noisy, you can change the `generation-mode` to the block
+mode in which only a pair of comment tags will be used to designate the entire
+generated section.
+
+### Full list of tags
 
 | tag name                                | corresponding yaml path                                                       | description                                                                   | type               |
 | --------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------ |
