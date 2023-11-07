@@ -97,6 +97,24 @@ class TestGenerateDocs(unittest.TestCase):
         )
         self.assertTrue(comparison)  # generated file content is as expected
 
+    def test_generated_docs_workflow_update_readme_globbing(self):
+        generate_docs(
+            file_paths=["tests/input_files/valid_workflow_1.yaml"],
+            usage_ref_override="main",
+        )
+        generate_docs(
+            file_paths=["tests/input_files/valid_workflow_*.yaml"],
+            usage_ref_override="main",
+        )
+        path = pathlib.Path("tests/input_files/README.md")
+        self.assertTrue(path.is_file())  # generated file exists
+
+        comparison = filecmp.cmp(
+            "tests/input_files/README.md",
+            "tests/output_docs/WORKFLOW_UPDATE_README.md",
+        )
+        self.assertTrue(comparison)  # generated file content is as expected
+
     def test_generated_docs_workflow_existing_readme(self):
         generate_docs(
             file_paths=["tests/input_files/valid_workflow_2.yaml"],

@@ -47,7 +47,8 @@ def generate_docs(
     """
     if dry_run:
         docs_root_path = pathlib.Path(tempfile.mkdtemp())
-    file_paths = [pathlib.Path(i) for i in file_paths for _ in glob(i)]
+    file_paths = [pathlib.Path(j) for i in file_paths for j in glob(i)]
+    file_paths = list(set(file_paths))  # remove duplicates
     changed_files = []
     for path in file_paths:
         logging.debug(f"evaluating: {path}")
