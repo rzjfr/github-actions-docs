@@ -29,10 +29,12 @@ pip install github-actions-docs
 ```bash
 github-actions-docs .github/actions/example/action.yaml
 # Creates or updates .github/actions/example/README.md
+
 github-actions-docs .github/actions/example/action.yaml --verbose --dry-run --show-diff
 # Does not save anything on the disk and shows the diff between what would have
-# been generated if and existing .github/actions/example/README.md
-github-actions-docs .github/workflows/reusable_workflow_1.yaml
+# been generated comparing to .github/actions/example/README.md
+
+github-actions-docs .github/workflows/*.yaml
 # Creates or updates .github/workflows/README.md
 ```
 
@@ -54,7 +56,7 @@ Sample `.pre-commit-config.yaml`
 ```bash
 github-actions-docs --help
 #positional arguments:
-#  input_files_path      Path of a github action or reusable workflow file(s).
+#  input_files_path      Path (or glob) of github action or reusable workflow file(s).
 #
 #options:
 #  -h, --help            show this help message and exit

@@ -14,8 +14,8 @@ from ruamel.yaml import YAML
 
 
 class GithubActions:
-    def __init__(self, yaml_path: str) -> None:
-        self.yaml_path = pathlib.Path(yaml_path)
+    def __init__(self, yaml_path: pathlib.Path) -> None:
+        self.yaml_path = yaml_path
         # validate file
         if not self.yaml_path.is_file():
             raise GithubActionsDocsError(f"file {yaml_path} does not exist")
