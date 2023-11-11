@@ -73,6 +73,6 @@ def build_args_parser(description: str, version: str) -> argparse.ArgumentParser
         "input_files_path",
         nargs="+",
         type=str,
-        help="Path of github action or reusable workflow file(s).",
+        help="Path (or glob) of github action or reusable workflow file(s).",
     )
     return parser

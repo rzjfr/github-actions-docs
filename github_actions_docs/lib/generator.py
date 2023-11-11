@@ -3,6 +3,7 @@ import logging
 import pathlib
 import re
 import tempfile
+from glob import glob
 
 from github_actions_docs.config import DOCS_TEMPLATES
 from github_actions_docs.errors import (
@@ -29,7 +30,7 @@ def generate_docs(
 ) -> int:
     """
     Args:
-        file_paths: list of files requires to be evaluated
+        file_paths: list of files requires to be evaluated, it can cointain glob
         output_mode: inject to the existing docs_filename or create new based on the
             DOCS_TEMPLATE_ACTION
         docs_filename: name of the markdown file which will be created next to the
@@ -45,7 +46,9 @@ def generate_docs(
         exit code, 1 if any of input files has been changed, 0 if no change.
     """
     if dry_run:
-        docs_path = pathlib.Path(tempfile.mkdtemp())
+        docs_root_path = pathlib.Path(tempfile.mkdtemp())
+    file_paths = [pathlib.Path(j) for i in file_paths for j in glob(i)]
+    file_paths = list(set(file_paths))  # remove duplicates
     changed_files = []
     for path in file_paths:
         logging.debug(f"evaluating: {path}")
@@ -69,7 +72,7 @@ def generate_docs(
             with open(existing_docs_path, "r") as f:
                 existing_file_content = f.read()
         if dry_run:
-            docs_path = docs_path.joinpath(f"{hash(path)}_{docs_filename}")
+            docs_path = docs_root_path.joinpath(f"{hash(path)}_{docs_filename}")
             if existing_docs_path.is_file():
                 with open(docs_path, "w") as f:
                     f.write(existing_file_content)
@@ -109,7 +112,14 @@ def generate_docs(
             logging.info(f"changed for file: {github_actions.yaml_path}")
         else:
             logging.info(f"no change: {github_actions.yaml_path}")
-    logging.debug(f"number of changed files: {sum(changed_files)}/{len(file_paths)}")
+    if dry_run:
+        logging.debug(
+            f"number of processed files: {sum(changed_files)}/{len(file_paths)}"
+        )
+    else:
+        logging.debug(
+            f"number of changed files: {sum(changed_files)}/{len(file_paths)}"
+        )
     return 1 if any(changed_files) else 0
 
 
