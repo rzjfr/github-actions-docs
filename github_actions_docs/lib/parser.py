@@ -76,7 +76,7 @@ class GithubActions:
             comment = ""
             if all_comments := value.ca.items.get("description"):
                 comment = " ".join([i.value for i in all_comments if i])
-            default = re.sub("[\*_\n~]", "", value.get("default", ""))
+            default = re.sub("[*\n~]", "", value.get("default", ""))
             inputs_content.append(
                 [
                     item,
