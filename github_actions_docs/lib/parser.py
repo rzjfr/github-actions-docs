@@ -1,4 +1,5 @@
 import pathlib
+import re
 
 from github_actions_docs.config import (
     GH_DOCS_WORKFLOWS_TABLE_OF_CONTENT_TITLE,
@@ -75,12 +76,13 @@ class GithubActions:
             comment = ""
             if all_comments := value.ca.items.get("description"):
                 comment = " ".join([i.value for i in all_comments if i])
+            default = re.sub("[*\n~]", "", value.get("default", ""))
             inputs_content.append(
                 [
                     item,
                     f"{value['description']}{comment}".replace("\n", "").strip(),
                     f"{value.get('required', True)}".lower(),
-                    f"\"{value.get('default', '')}\"".replace("\n", "").strip().lower(),
+                    f'"{default}"'.lower(),
                 ]
             )
         result["inputs"] = {
