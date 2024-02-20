@@ -80,7 +80,7 @@ class GithubActions:
                     item,
                     f"{value['description']}{comment}".replace("\n", "").strip(),
                     f"{value.get('required', True)}".lower(),
-                    f"\"{value.get('default', '')}\"".lower(),
+                    f"\"{value.get('default', '')}\"".replace("\n", "").strip().lower(),
                 ]
             )
         result["inputs"] = {
